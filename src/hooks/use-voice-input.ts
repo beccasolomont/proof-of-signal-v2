@@ -9,10 +9,10 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 export function useVoiceInput(onTranscript: (text: string) => void) {
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   useEffect(() => {
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     setSupported(!!SR);
   }, []);
 
@@ -22,7 +22,7 @@ export function useVoiceInput(onTranscript: (text: string) => void) {
       return;
     }
 
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) return;
 
     const recognition = new SR();
@@ -31,7 +31,7 @@ export function useVoiceInput(onTranscript: (text: string) => void) {
     recognition.lang = 'en-US';
     recognitionRef.current = recognition;
 
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
       const transcript = event.results[0][0].transcript;
       onTranscript(transcript);
     };

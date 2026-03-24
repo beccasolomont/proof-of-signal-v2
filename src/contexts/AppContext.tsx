@@ -235,7 +235,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setSignals(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
 
     if (authUser && !isDemo) {
-      const dbUpdates: any = {};
+      const dbUpdates: Record<string, string | boolean | null> = {};
       if (updates.text !== undefined) dbUpdates.text = updates.text;
       if (updates.date !== undefined) dbUpdates.date = updates.date;
       if (updates.tag !== undefined) dbUpdates.tag = updates.tag;
