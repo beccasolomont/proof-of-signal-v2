@@ -6,14 +6,32 @@
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+interface SpeechRecognitionInstance {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: { results: { 0: { 0: { transcript: string } } } }) => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+
+type SpeechRecognitionCtor = new () => SpeechRecognitionInstance;
+
+function getSpeechRecognition(): SpeechRecognitionCtor | undefined {
+  return (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
 export function useVoiceInput(onTranscript: (text: string) => void) {
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
 
   useEffect(() => {
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    setSupported(!!SR);
+    setSupported(!!getSpeechRecognition());
   }, []);
 
   const toggle = useCallback(() => {
@@ -22,7 +40,7 @@ export function useVoiceInput(onTranscript: (text: string) => void) {
       return;
     }
 
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SR = getSpeechRecognition();
     if (!SR) return;
 
     const recognition = new SR();
@@ -31,7 +49,7 @@ export function useVoiceInput(onTranscript: (text: string) => void) {
     recognition.lang = 'en-US';
     recognitionRef.current = recognition;
 
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       onTranscript(transcript);
     };

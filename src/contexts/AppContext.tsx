@@ -105,14 +105,23 @@ const demoSignals: Signal[] = [
 const AppContext = createContext<AppState | undefined>(undefined);
 
 /** Convert a Supabase signal row to our Signal interface. */
-function rowToSignal(row: any): Signal {
+function rowToSignal(row: {
+  id: string;
+  text: string;
+  date: string;
+  tag: string;
+  flagged: boolean;
+  flag_category?: string | null;
+  meeting?: string | null;
+  attendees?: string | null;
+}): Signal {
   return {
     id: row.id,
     text: row.text,
     date: row.date,
     tag: row.tag,
     flagged: row.flagged,
-    flagCategory: row.flag_category || undefined,
+    flagCategory: (row.flag_category as FlagCategory) || undefined,
     context: (row.meeting || row.attendees)
       ? { meeting: row.meeting || undefined, attendees: row.attendees || undefined }
       : undefined,
@@ -226,7 +235,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setSignals(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
 
     if (authUser && !isDemo) {
-      const dbUpdates: any = {};
+      const dbUpdates: Record<string, string | boolean | null> = {};
       if (updates.text !== undefined) dbUpdates.text = updates.text;
       if (updates.date !== undefined) dbUpdates.date = updates.date;
       if (updates.tag !== undefined) dbUpdates.tag = updates.tag;

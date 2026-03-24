@@ -4,11 +4,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
-import { CAREER_STAGES, GOALS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Check, Edit2, RotateCcw, Trash2 } from 'lucide-react';
+import { Edit2, RotateCcw, Trash2 } from 'lucide-react';
+import { MAX_GOALS } from '@/lib/constants';
+import CareerStageSelector from '@/components/CareerStageSelector';
+import GoalSelector from '@/components/GoalSelector';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,7 +38,7 @@ const Profile = () => {
 
   const toggleGoal = (g: string) => {
     setGoals(prev =>
-      prev.includes(g) ? prev.filter(x => x !== g) : prev.length < 2 ? [...prev, g] : prev
+      prev.includes(g) ? prev.filter(x => x !== g) : prev.length < MAX_GOALS ? [...prev, g] : prev
     );
   };
 
@@ -67,18 +69,8 @@ const Profile = () => {
             <div>
               <label className="text-xs text-muted-foreground uppercase tracking-wider">Career Stage</label>
               {editing ? (
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  {CAREER_STAGES.map(s => (
-                    <button
-                      key={s}
-                      onClick={() => setCareerStage(s)}
-                      className={`px-3 py-2 rounded-xl text-sm text-left border transition-colors ${
-                        careerStage === s ? 'border-navy bg-navy text-primary-foreground' : 'border-border bg-card text-foreground hover:border-blush'
-                      }`}
-                    >
-                      {s}
-                    </button>
-                  ))}
+                <div className="mt-2">
+                  <CareerStageSelector value={careerStage} onChange={setCareerStage} />
                 </div>
               ) : (
                 <p className="text-foreground font-medium mt-1">{user.careerStage || '—'}</p>
@@ -87,18 +79,8 @@ const Profile = () => {
             <div>
               <label className="text-xs text-muted-foreground uppercase tracking-wider">Focus Areas</label>
               {editing ? (
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  {GOALS.map(g => (
-                    <button
-                      key={g}
-                      onClick={() => toggleGoal(g)}
-                      className={`px-3 py-2 rounded-xl text-sm text-left border transition-colors ${
-                        goals.includes(g) ? 'border-navy bg-navy text-primary-foreground' : 'border-border bg-card text-foreground hover:border-blush'
-                      }`}
-                    >
-                      {goals.includes(g) && <Check className="inline w-3 h-3 mr-1" />}{g}
-                    </button>
-                  ))}
+                <div className="mt-2">
+                  <GoalSelector selected={goals} onToggle={toggleGoal} />
                 </div>
               ) : (
                 <div className="flex gap-2 mt-1 flex-wrap">

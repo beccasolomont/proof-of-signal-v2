@@ -3,41 +3,16 @@
  * If authenticated, checks onboarding status and redirects accordingly.
  * Otherwise renders children (landing page).
  */
-import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useApp } from '@/contexts/AppContext';
-import { supabase } from '@/integrations/supabase/client';
+import { useOnboardingRedirect } from '@/hooks/useOnboardingRedirect';
 import { Loader2 } from 'lucide-react';
 
 const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   const { isDemo } = useApp();
-  const [redirectPath, setRedirectPath] = useState<string | null>(null);
-  const [checking, setChecking] = useState(false);
-
-  useEffect(() => {
-    if (loading || isDemo || !user) return;
-
-    const check = async () => {
-      setChecking(true);
-      try {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('onboarding_complete')
-          .eq('id', user.id)
-          .single();
-
-        setRedirectPath(profile?.onboarding_complete ? '/dashboard' : '/onboarding');
-      } catch {
-        setRedirectPath('/onboarding');
-      } finally {
-        setChecking(false);
-      }
-    };
-
-    check();
-  }, [user, loading, isDemo]);
+  const { redirectPath, checking } = useOnboardingRedirect(user, loading, isDemo);
 
   if (loading || checking) {
     return (

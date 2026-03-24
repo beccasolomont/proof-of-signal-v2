@@ -8,8 +8,9 @@ import { useState } from 'react';
 import { useApp, FLAG_CATEGORIES, FlagCategory } from '@/contexts/AppContext';
 import { Badge } from '@/components/ui/badge';
 import EmptyState from '@/components/illustrations/EmptyState';
+import DemoInsight from '@/components/DemoInsight';
 import { SIGNAL_TAGS } from '@/lib/signalTagger';
-import { TAG_DEFINITIONS, THEME_INSIGHTS } from '@/lib/constants';
+import { TAG_DEFINITIONS, THEME_INSIGHTS, MIN_SIGNALS_FOR_INSIGHT, DEMO_USER_NAME } from '@/lib/constants';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -28,6 +29,7 @@ const Patterns = () => {
     .sort((a, b) => b[1] - a[1]);
 
   const totalSignals = signals.length;
+  const signalsNeeded = MIN_SIGNALS_FOR_INSIGHT - totalSignals;
 
   const flaggedSignals = signals.filter(s => s.flagged);
   const filteredFlagged = categoryFilter === 'all'
@@ -42,10 +44,10 @@ const Patterns = () => {
           AI-powered insights based on your signals. The more you log, the clearer the picture.
         </p>
 
-        {totalSignals < 3 ? (
+        {totalSignals < MIN_SIGNALS_FOR_INSIGHT ? (
           <EmptyState
             title="Not enough signals yet"
-            description={`Log ${3 - totalSignals} more signal${3 - totalSignals > 1 ? 's' : ''} to unlock your first pattern insight.`}
+            description={`Log ${signalsNeeded} more signal${signalsNeeded > 1 ? 's' : ''} to unlock your first pattern insight.`}
           />
         ) : (
           <div className="grid lg:grid-cols-2 gap-8">
@@ -80,16 +82,8 @@ const Patterns = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-navy mb-1">What your signals suggest</h3>
-                  {user.firstName === 'Diana' ? (
-                    <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-navy">Your signals from this week</h4>
-                      <p className="text-sm text-foreground leading-relaxed">
-                        A pattern is emerging: you're generating recognition at the senior level (CPO, VP Design) at the same time you're noticing credit gaps at the peer level. That's worth paying attention to — especially before a promotion conversation.
-                      </p>
-                      <p className="text-sm text-foreground leading-relaxed font-medium">
-                        Suggested next action: Flag your top 3 recognition signals and bring them to your next 1:1. The question isn't whether you've done the work — it's whether your manager has seen it.
-                      </p>
-                    </div>
+                  {user.firstName === DEMO_USER_NAME ? (
+                    <DemoInsight />
                   ) : (
                     <p className="text-sm text-foreground leading-relaxed">
                       {THEME_INSIGHTS[topTags[0]?.[0]] || `Based on your ${totalSignals} signals, patterns are emerging.`}
