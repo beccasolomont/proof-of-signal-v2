@@ -105,7 +105,16 @@ const demoSignals: Signal[] = [
 const AppContext = createContext<AppState | undefined>(undefined);
 
 /** Convert a Supabase signal row to our Signal interface. */
-function rowToSignal(row: any): Signal {
+function rowToSignal(row: {
+  id: string;
+  text: string;
+  date: string;
+  tag: string;
+  flagged: boolean;
+  flag_category?: string | null;
+  meeting?: string | null;
+  attendees?: string | null;
+}): Signal {
   return {
     id: row.id,
     text: row.text,
