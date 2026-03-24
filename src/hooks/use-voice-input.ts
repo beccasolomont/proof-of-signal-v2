@@ -6,14 +6,21 @@
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+type SpeechRecognitionCtor = new () => SpeechRecognition;
+
+function getSpeechRecognition(): SpeechRecognitionCtor | undefined {
+  return (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
 export function useVoiceInput(onTranscript: (text: string) => void) {
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   useEffect(() => {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    setSupported(!!SR);
+    setSupported(!!getSpeechRecognition());
   }, []);
 
   const toggle = useCallback(() => {
