@@ -8,13 +8,22 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { classifySignal, SIGNAL_TAGS } from '@/lib/signalTagger';
-import { THEME_INSIGHTS } from '@/lib/constants';
+import {
+  THEME_INSIGHTS,
+  MAX_SIGNAL_LENGTH,
+  CONFIRMATION_TIMEOUT_MS,
+  MIN_SIGNALS_FOR_INSIGHT,
+  DEMO_USER_NAME,
+} from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Check, CheckCircle2, Star, Lock, ChevronDown, ChevronUp, Filter, Mic, MicOff, Tag } from 'lucide-react';
+import { CheckCircle2, Lock, ChevronDown, ChevronUp, Filter, Tag } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/use-voice-input';
+import { useToast } from '@/hooks/use-toast';
+import VoiceInputButton from '@/components/VoiceInputButton';
+import DemoInsight from '@/components/DemoInsight';
 import EmptyState from '@/components/illustrations/EmptyState';
 import SignalCard from '@/components/SignalCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -24,6 +33,7 @@ import { format, parseISO } from 'date-fns';
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, signals, addSignal, updateSignal, deleteSignal, toggleFlag } = useApp();
+  const { toast } = useToast();
   const [text, setText] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [showContext, setShowContext] = useState(false);
@@ -34,37 +44,42 @@ const Dashboard = () => {
   const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
   const [selectedAttendee, setSelectedAttendee] = useState<string | null>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const { supported: voiceSupported, listening, toggle: toggleVoice } = useVoiceInput((transcript) => {
-    setText(prev => prev ? `${prev} ${transcript}`.slice(0, 500) : transcript.slice(0, 500));
-  });
-
   const [isClassifying, setIsClassifying] = useState(false);
+
+  const { supported: voiceSupported, listening, toggle: toggleVoice } = useVoiceInput((transcript) => {
+    setText(prev => prev ? `${prev} ${transcript}`.slice(0, MAX_SIGNAL_LENGTH) : transcript.slice(0, MAX_SIGNAL_LENGTH));
+  });
 
   /** Submit a new signal and show the confirmation state briefly. */
   const handleSubmit = async () => {
     setIsClassifying(true);
-    const tag = await classifySignal(text);
-    setIsClassifying(false);
-    setLastTag(tag);
-    const context = (meeting || attendees) ? { meeting, attendees } : undefined;
-    addSignal({ text, date, tag, flagged: false, context });
-    setText('');
-    setMeeting('');
-    setAttendees('');
-    setShowContext(false);
-    setJustLogged(true);
-    setTimeout(() => setJustLogged(false), 2000);
+    try {
+      const tag = await classifySignal(text);
+      setLastTag(tag);
+      const context = (meeting || attendees) ? { meeting, attendees } : undefined;
+      addSignal({ text, date, tag, flagged: false, context });
+      setText('');
+      setMeeting('');
+      setAttendees('');
+      setShowContext(false);
+      setJustLogged(true);
+      setTimeout(() => setJustLogged(false), CONFIRMATION_TIMEOUT_MS);
+    } catch {
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to classify signal. Please try again.' });
+    } finally {
+      setIsClassifying(false);
+    }
   };
 
   const signalCount = signals.length;
   const checklist = [
     { label: 'Tell us where you are', done: !!user.careerStage },
     { label: 'Log your first signal', done: signalCount >= 1 },
-    { label: 'Log 2 more signals to unlock your first insight', done: signalCount >= 3 },
+    { label: 'Log 2 more signals to unlock your first insight', done: signalCount >= MIN_SIGNALS_FOR_INSIGHT },
     { label: 'Try a coaching session', done: false, comingSoon: true },
   ];
 
-  const showInsight = signalCount >= 3;
+  const showInsight = signalCount >= MIN_SIGNALS_FOR_INSIGHT;
 
   /** Determine the most frequent signal tag for insight copy. */
   const topTheme = useMemo(() => {
@@ -167,25 +182,12 @@ const Dashboard = () => {
                   <div className="relative">
                     <Textarea
                       value={text}
-                      onChange={e => setText(e.target.value.slice(0, 500))}
+                      onChange={e => setText(e.target.value.slice(0, MAX_SIGNAL_LENGTH))}
                       placeholder="What happened?"
                       className="rounded-xl min-h-[100px] pr-10"
                     />
                     {voiceSupported && (
-                      <button
-                        type="button"
-                        onClick={toggleVoice}
-                        className={`absolute top-3 right-3 p-1.5 rounded-lg transition-colors ${listening ? 'bg-destructive/10 hover:bg-destructive/20' : ''}`}
-                        title={listening ? 'Stop recording' : 'Start voice input'}
-                      >
-                        {listening ? (
-                          <span className="flex items-center gap-1 text-xs font-medium text-destructive animate-pulse">
-                            <MicOff className="w-4 h-4" /> Stop
-                          </span>
-                        ) : (
-                          <Mic className="w-4 h-4 text-muted-foreground hover:text-navy" />
-                        )}
-                      </button>
+                      <VoiceInputButton listening={listening} onToggle={toggleVoice} />
                     )}
                   </div>
                   <div className="flex items-center justify-between">
@@ -195,7 +197,7 @@ const Dashboard = () => {
                       onChange={e => setDate(e.target.value)}
                       className="rounded-xl w-40"
                     />
-                    <span className="text-xs text-muted-foreground">{text.length}/500</span>
+                    <span className="text-xs text-muted-foreground">{text.length}/{MAX_SIGNAL_LENGTH}</span>
                   </div>
                   {/* Optional context */}
                   <button
@@ -247,16 +249,8 @@ const Dashboard = () => {
                   </div>
                   <div>
                     <h3 className="text-sm font-semibold text-navy mb-1">Pattern detected</h3>
-                    {user.firstName === 'Diana' ? (
-                      <div className="space-y-3">
-                        <h4 className="text-sm font-semibold text-navy">Your signals from this week</h4>
-                        <p className="text-sm text-foreground leading-relaxed">
-                          A pattern is emerging: you're generating recognition at the senior level (CPO, VP Design) at the same time you're noticing credit gaps at the peer level. That's worth paying attention to — especially before a promotion conversation.
-                        </p>
-                        <p className="text-sm text-foreground leading-relaxed font-medium">
-                          Suggested next action: Flag your top 3 recognition signals and bring them to your next 1:1. The question isn't whether you've done the work — it's whether your manager has seen it.
-                        </p>
-                      </div>
+                    {user.firstName === DEMO_USER_NAME ? (
+                      <DemoInsight />
                     ) : (
                       <p className="text-sm text-foreground leading-relaxed">
                         {THEME_INSIGHTS[topTheme] || `You've logged ${signalCount} signals so far. As patterns emerge, you'll see personalized insights here.`}

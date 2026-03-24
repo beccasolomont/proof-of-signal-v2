@@ -2,10 +2,11 @@
  * Auth — dual-mode page supporting Create Account (signup) and Sign In (login).
  * Redirects authenticated users based on onboarding status.
  */
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useApp } from '@/contexts/AppContext';
+import { useOnboardingRedirect } from '@/hooks/useOnboardingRedirect';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
 import { Button } from '@/components/ui/button';
@@ -28,46 +29,17 @@ const Auth = () => {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [redirectPath, setRedirectPath] = useState<string | null>(null);
-  const [checkingProfile, setCheckingProfile] = useState(false);
 
-  // When user becomes authenticated, check onboarding status to determine redirect
-  useEffect(() => {
-    if (!user || loading) return;
+  const { redirectPath, checking } = useOnboardingRedirect(user, loading);
 
-    const checkOnboarding = async () => {
-      setCheckingProfile(true);
-      try {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('onboarding_complete')
-          .eq('id', user.id)
-          .single();
+  // Notify returning users who landed on signup
+  if (redirectPath === '/dashboard' && mode === 'signup') {
+    toast({
+      title: 'Welcome back!',
+      description: "Looks like you already have an account — we've signed you in.",
+    });
+  }
 
-        if (profile?.onboarding_complete) {
-          // If user came through signup mode but is already onboarded, notify them
-          if (mode === 'signup') {
-            toast({
-              title: 'Welcome back!',
-              description: "Looks like you already have an account — we've signed you in.",
-            });
-          }
-          setRedirectPath('/dashboard');
-        } else {
-          setRedirectPath('/onboarding');
-        }
-      } catch {
-        // Profile not found yet (trigger may be pending), default to onboarding
-        setRedirectPath('/onboarding');
-      } finally {
-        setCheckingProfile(false);
-      }
-    };
-
-    checkOnboarding();
-  }, [user, loading]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Redirect once path is determined
   if (redirectPath) {
     return <Navigate to={redirectPath} replace />;
   }
@@ -91,19 +63,24 @@ const Auth = () => {
   const handleMagicLink = async () => {
     if (!email.trim()) return;
     setSending(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: window.location.origin },
-    });
-    setSending(false);
-    if (error) {
-      toast({ variant: 'destructive', title: 'Error', description: error.message });
-    } else {
-      setSent(true);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: window.location.origin },
+      });
+      if (error) {
+        toast({ variant: 'destructive', title: 'Error', description: error.message });
+      } else {
+        setSent(true);
+      }
+    } catch {
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to send magic link.' });
+    } finally {
+      setSending(false);
     }
   };
 
-  if (loading || checkingProfile) {
+  if (loading || checking) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />

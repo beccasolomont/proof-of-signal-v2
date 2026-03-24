@@ -8,14 +8,17 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { classifySignal } from '@/lib/signalTagger';
-import { CAREER_STAGES, GOALS } from '@/lib/constants';
+import { MAX_SIGNAL_LENGTH } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, ArrowLeft, Check, Mic, MicOff } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/use-voice-input';
 import { useToast } from '@/hooks/use-toast';
+import VoiceInputButton from '@/components/VoiceInputButton';
+import CareerStageSelector from '@/components/CareerStageSelector';
+import GoalSelector from '@/components/GoalSelector';
 import HeroIllustration from '@/components/illustrations/HeroIllustration';
 
 const Onboarding = () => {
@@ -31,8 +34,10 @@ const Onboarding = () => {
   const [assignedTag, setAssignedTag] = useState('');
   const [swappedIn, setSwappedIn] = useState<string | null>(null);
   const [swappedOut, setSwappedOut] = useState<string | null>(null);
+  const [isClassifying, setIsClassifying] = useState(false);
+
   const { supported: voiceSupported, listening, toggle: toggleVoice } = useVoiceInput((transcript) => {
-    setSignalText(prev => prev ? `${prev} ${transcript}`.slice(0, 500) : transcript.slice(0, 500));
+    setSignalText(prev => prev ? `${prev} ${transcript}`.slice(0, MAX_SIGNAL_LENGTH) : transcript.slice(0, MAX_SIGNAL_LENGTH));
   });
 
   const next = () => setStep(s => s + 1);
@@ -68,18 +73,24 @@ const Onboarding = () => {
     });
   };
 
-  const [isClassifying, setIsClassifying] = useState(false);
-
   /** Submit the first signal and finalise the onboarding profile. */
   const submitSignal = async () => {
     setIsClassifying(true);
-    const tag = await classifySignal(signalText);
-    setIsClassifying(false);
-    setAssignedTag(tag);
-    addSignal({ text: signalText, date: new Date().toISOString().split('T')[0], tag, flagged: false });
-    setUser({ firstName, careerStage, goals, onboardingComplete: true });
-    setSubmitted(true);
+    try {
+      const tag = await classifySignal(signalText);
+      setAssignedTag(tag);
+      addSignal({ text: signalText, date: new Date().toISOString().split('T')[0], tag, flagged: false });
+      setUser({ firstName, careerStage, goals, onboardingComplete: true });
+      setSubmitted(true);
+    } catch {
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to classify signal. Please try again.' });
+    } finally {
+      setIsClassifying(false);
+    }
   };
+
+  const getGoalExtraClassName = (g: string) =>
+    `${swappedIn === g ? 'animate-goal-swap-in' : ''} ${swappedOut === g ? 'animate-goal-shake' : ''}`;
 
   const canProceed = [
     true, // welcome
@@ -120,21 +131,7 @@ const Onboarding = () => {
         </div>
         <div>
           <label className="block text-sm font-medium text-foreground mb-1.5">Where are you in your career?</label>
-          <div className="grid grid-cols-2 gap-2">
-            {CAREER_STAGES.map(s => (
-              <button
-                key={s}
-                onClick={() => setCareerStage(s)}
-                className={`px-4 py-3 rounded-xl text-sm text-left border transition-colors ${
-                  careerStage === s
-                    ? 'border-navy bg-navy text-primary-foreground'
-                    : 'border-border bg-card text-foreground hover:border-blush'
-                }`}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
+          <CareerStageSelector value={careerStage} onChange={setCareerStage} />
         </div>
       </div>
     </div>,
@@ -145,22 +142,7 @@ const Onboarding = () => {
       <p className="text-sm text-muted-foreground mb-8">
         Pick up to 2 goals. We'll go from there.
       </p>
-      <div className="grid grid-cols-2 gap-2">
-        {GOALS.map(g => (
-          <button
-            key={g}
-            onClick={() => toggleGoal(g)}
-            className={`px-4 py-3 rounded-xl text-sm text-left border transition-colors ${
-              goals.includes(g)
-                ? 'border-navy bg-navy text-primary-foreground'
-                : 'border-border bg-card text-foreground hover:border-blush'
-            } ${swappedIn === g ? 'animate-goal-swap-in' : ''} ${swappedOut === g ? 'animate-goal-shake' : ''}`}
-          >
-            {goals.includes(g) && <Check className="inline w-3.5 h-3.5 mr-1.5" />}
-            {g}
-          </button>
-        ))}
-      </div>
+      <GoalSelector selected={goals} onToggle={toggleGoal} getExtraClassName={getGoalExtraClassName} />
     </div>,
 
     // OB-04: Signal Example
@@ -208,28 +190,15 @@ const Onboarding = () => {
           <div className="relative">
             <Textarea
               value={signalText}
-              onChange={e => setSignalText(e.target.value.slice(0, 500))}
+              onChange={e => setSignalText(e.target.value.slice(0, MAX_SIGNAL_LENGTH))}
               placeholder="What happened?"
               className="rounded-xl min-h-[120px] pr-10"
             />
             {voiceSupported && (
-              <button
-                type="button"
-                onClick={toggleVoice}
-                className={`absolute top-3 right-3 p-1.5 rounded-lg transition-colors ${listening ? 'bg-destructive/10 hover:bg-destructive/20' : ''}`}
-                title={listening ? 'Stop recording' : 'Start voice input'}
-              >
-                {listening ? (
-                  <span className="flex items-center gap-1 text-xs font-medium text-destructive animate-pulse">
-                    <MicOff className="w-4 h-4" /> Stop
-                  </span>
-                ) : (
-                  <Mic className="w-4 h-4 text-muted-foreground hover:text-navy" />
-                )}
-              </button>
+              <VoiceInputButton listening={listening} onToggle={toggleVoice} />
             )}
           </div>
-          <p className="text-xs text-muted-foreground mb-6 text-right">{signalText.length}/500</p>
+          <p className="text-xs text-muted-foreground mb-6 text-right">{signalText.length}/{MAX_SIGNAL_LENGTH}</p>
           <Button
             onClick={submitSignal}
             disabled={!signalText.trim() || isClassifying}
