@@ -3,6 +3,23 @@
  * Centralises user-facing strings that appear in multiple locations.
  */
 
+/* ── Numeric limits ── */
+
+/** Maximum character length for a signal's text body. */
+export const MAX_SIGNAL_LENGTH = 500;
+
+/** Maximum number of goals a user can select. */
+export const MAX_GOALS = 2;
+
+/** Minimum signals required before pattern insights unlock. */
+export const MIN_SIGNALS_FOR_INSIGHT = 3;
+
+/** Duration (ms) to show the "signal captured" confirmation before resetting. */
+export const CONFIRMATION_TIMEOUT_MS = 2000;
+
+/** Demo user first-name used to branch insight copy. */
+export const DEMO_USER_NAME = 'Diana';
+
 /** Career stage options shown during onboarding and on the profile editor. */
 export const CAREER_STAGES = [
   'Aspiring PM',
@@ -59,3 +76,10 @@ export const TAG_DEFINITIONS: Record<string, string> = {
   'Personal Milestone':
     'A meaningful moment in your own career progression — first time leading something, a stretch assignment, a door that opened.',
 };
+
+/** Demo-mode Diana insight copy, shared by Dashboard and Patterns. */
+export const DEMO_INSIGHT_TITLE = 'Your signals from this week';
+export const DEMO_INSIGHT_BODY =
+  "A pattern is emerging: you're generating recognition at the senior level (CPO, VP Design) at the same time you're noticing credit gaps at the peer level. That's worth paying attention to — especially before a promotion conversation.";
+export const DEMO_INSIGHT_ACTION =
+  "Suggested next action: Flag your top 3 recognition signals and bring them to your next 1:1. The question isn't whether you've done the work — it's whether your manager has seen it.";
