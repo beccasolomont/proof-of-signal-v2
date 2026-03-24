@@ -7,7 +7,18 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-type SpeechRecognitionCtor = new () => SpeechRecognition;
+interface SpeechRecognitionInstance {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: { results: { 0: { 0: { transcript: string } } } }) => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+
+type SpeechRecognitionCtor = new () => SpeechRecognitionInstance;
 
 function getSpeechRecognition(): SpeechRecognitionCtor | undefined {
   return (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -17,7 +28,7 @@ function getSpeechRecognition(): SpeechRecognitionCtor | undefined {
 export function useVoiceInput(onTranscript: (text: string) => void) {
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
 
   useEffect(() => {
     setSupported(!!getSpeechRecognition());
