@@ -121,7 +121,7 @@ function rowToSignal(row: {
     date: row.date,
     tag: row.tag,
     flagged: row.flagged,
-    flagCategory: row.flag_category || undefined,
+    flagCategory: (row.flag_category as FlagCategory) || undefined,
     context: (row.meeting || row.attendees)
       ? { meeting: row.meeting || undefined, attendees: row.attendees || undefined }
       : undefined,

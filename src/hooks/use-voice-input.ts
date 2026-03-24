@@ -29,7 +29,7 @@ export function useVoiceInput(onTranscript: (text: string) => void) {
       return;
     }
 
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SR = getSpeechRecognition();
     if (!SR) return;
 
     const recognition = new SR();
