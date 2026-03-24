@@ -49,7 +49,7 @@ export function useVoiceInput(onTranscript: (text: string) => void) {
     recognition.lang = 'en-US';
     recognitionRef.current = recognition;
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       onTranscript(transcript);
     };
