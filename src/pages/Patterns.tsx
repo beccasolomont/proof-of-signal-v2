@@ -38,6 +38,24 @@ const Patterns = () => {
     ? flaggedSignals
     : flaggedSignals.filter(s => (s.flagCategory || 'ai-pending') === categoryFilter);
 
+  // Auto-suggest flag categories for uncategorized flagged signals
+  const suggestedRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    const uncategorized = flaggedSignals.filter(s => !s.flagCategory && !suggestedRef.current.has(s.id));
+    if (uncategorized.length === 0) return;
+
+    uncategorized.forEach(s => {
+      suggestedRef.current.add(s.id);
+      supabase.functions.invoke('suggest-flag-category', {
+        body: { text: s.text, tag: s.tag },
+      }).then(({ data, error }) => {
+        if (!error && data?.category) {
+          updateSignal(s.id, { flagCategory: data.category as FlagCategory });
+        }
+      }).catch(() => { /* silently fail */ });
+    });
+  }, [flaggedSignals]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div className="min-h-screen bg-background">
       <div className="w-full px-8 md:px-16 lg:px-24 py-10 max-w-[1600px] mx-auto">
