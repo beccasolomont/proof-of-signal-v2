@@ -4,7 +4,7 @@
  * Displays signal theme distribution, contextual insight copy based on dominant theme,
  * clickable tag definitions, and a categorised flagged-signal review section.
  */
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { useApp, FLAG_CATEGORIES, FlagCategory } from '@/contexts/AppContext';
 import { Badge } from '@/components/ui/badge';
 import EmptyState from '@/components/illustrations/EmptyState';
@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import SignalRadarChart from '@/components/SignalRadarChart';
 import SignalHeatmapCalendar from '@/components/SignalHeatmapCalendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
+
 
 const Patterns = () => {
   const { signals, user, updateSignal } = useApp();
@@ -37,25 +37,7 @@ const Patterns = () => {
   const flaggedSignals = signals.filter(s => s.flagged);
   const filteredFlagged = categoryFilter === 'all'
     ? flaggedSignals
-    : flaggedSignals.filter(s => (s.flagCategory || 'ai-pending') === categoryFilter);
-
-  // Auto-suggest flag categories for uncategorized flagged signals
-  const suggestedRef = useRef<Set<string>>(new Set());
-  useEffect(() => {
-    const uncategorized = flaggedSignals.filter(s => !s.flagCategory && !suggestedRef.current.has(s.id));
-    if (uncategorized.length === 0) return;
-
-    uncategorized.forEach(s => {
-      suggestedRef.current.add(s.id);
-      supabase.functions.invoke('suggest-flag-category', {
-        body: { text: s.text, tag: s.tag },
-      }).then(({ data, error }) => {
-        if (!error && data?.category) {
-          updateSignal(s.id, { flagCategory: data.category as FlagCategory });
-        }
-      }).catch(() => { /* silently fail */ });
-    });
-  }, [flaggedSignals]); // eslint-disable-line react-hooks/exhaustive-deps
+    : flaggedSignals.filter(s => s.flagCategory === categoryFilter);
 
   return (
     <div className="min-h-screen bg-background">
@@ -147,16 +129,13 @@ const Patterns = () => {
                         {s.tag}
                       </Badge>
                       <Select
-                        value={s.flagCategory || 'ai-pending'}
+                        value={s.flagCategory || 'Watch closely'}
                         onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
                       >
                         <SelectTrigger className="w-44 h-7 text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="ai-pending" disabled className="text-muted-foreground italic">
-                            AI suggestion pending
-                          </SelectItem>
                           {FLAG_CATEGORIES.map(cat => (
                             <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                           ))}
