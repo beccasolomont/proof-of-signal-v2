@@ -293,6 +293,23 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const addCustomTag = (tag: string) => {
+    setCustomTags(prev => {
+      if (prev.includes(tag)) return prev;
+      const updated = [...prev, tag];
+      localStorage.setItem('customSignalTags', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const removeCustomTag = (tag: string) => {
+    setCustomTags(prev => {
+      const updated = prev.filter(t => t !== tag);
+      localStorage.setItem('customSignalTags', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   /** Load the built-in Diana demo dataset (in-memory only). */
   const resetToDemo = () => {
     setIsDemo(true);
@@ -314,12 +331,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setIsDemo(false);
     setUserState(defaultUser);
     setSignals([]);
+    setCustomTags([]);
+    localStorage.removeItem('customSignalTags');
   };
 
   return (
     <AppContext.Provider value={{
-      user, signals, isDemo, loading,
+      user, signals, customTags, isDemo, loading,
       setUser, addSignal, updateSignal, deleteSignal, toggleFlag,
+      addCustomTag, removeCustomTag,
       resetToDemo, resetToClean, loadUserData,
     }}>
       {children}
