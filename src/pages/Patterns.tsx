@@ -52,7 +52,7 @@ const Patterns = () => {
             description={`Log ${signalsNeeded} more signal${signalsNeeded > 1 ? 's' : ''} to unlock your first pattern insight.`}
           />
         ) : (
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="grid lg:grid-cols-3 gap-6">
             {/* Tag Distribution */}
             <div className="bg-card rounded-2xl border border-border p-6">
               <h2 className="text-lg font-serif text-navy mb-4">Signal themes</h2>
