@@ -276,22 +276,64 @@ const Dashboard = () => {
               <div className="flex items-center gap-3 mb-4 flex-wrap">
                 <h2 className="text-lg font-serif text-navy">Your signals</h2>
                 <div className="flex items-center gap-2 ml-auto flex-wrap">
-                  {/* Tag filter */}
-                  <Select
-                    value={selectedTag || 'all'}
-                    onValueChange={val => setSelectedTag(val === 'all' ? null : val)}
-                  >
-                    <SelectTrigger className="h-8 w-[160px] text-xs rounded-full border-border">
-                      <Tag className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
-                      <SelectValue placeholder="All tags" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All tags</SelectItem>
-                      {SIGNAL_TAGS.map(tag => (
-                        <SelectItem key={tag} value={tag}>{tag}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {/* Tag filter chips — multi-select */}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+                    {[...SIGNAL_TAGS, ...customTags].map(tag => {
+                      const active = selectedTags.includes(tag);
+                      const isCustom = customTags.includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          onClick={() => setSelectedTags(prev =>
+                            active ? prev.filter(t => t !== tag) : [...prev, tag]
+                          )}
+                          className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                            active
+                              ? 'bg-navy text-primary-foreground border-navy'
+                              : 'bg-card text-muted-foreground border-border hover:border-blush/40'
+                          }`}
+                        >
+                          {tag}
+                          {isCustom && !active && (
+                            <span
+                              onClick={e => {
+                                e.stopPropagation();
+                                const updated = customTags.filter(t => t !== tag);
+                                setCustomTags(updated);
+                                localStorage.setItem('customSignalTags', JSON.stringify(updated));
+                                setSelectedTags(prev => prev.filter(t => t !== tag));
+                              }}
+                              className="ml-1 inline-flex"
+                            >
+                              <X className="w-3 h-3" />
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                    {/* Custom tag input */}
+                    <form
+                      onSubmit={e => {
+                        e.preventDefault();
+                        const trimmed = customTagInput.trim();
+                        if (trimmed && !SIGNAL_TAGS.includes(trimmed as any) && !customTags.includes(trimmed)) {
+                          const updated = [...customTags, trimmed];
+                          setCustomTags(updated);
+                          localStorage.setItem('customSignalTags', JSON.stringify(updated));
+                          setCustomTagInput('');
+                        }
+                      }}
+                      className="inline-flex"
+                    >
+                      <Input
+                        value={customTagInput}
+                        onChange={e => setCustomTagInput(e.target.value)}
+                        placeholder="+ Custom tag"
+                        className="h-7 w-24 text-xs rounded-full border-dashed px-2.5"
+                      />
+                    </form>
+                  </div>
                   {allAttendees.length > 0 && (
                     <div className="flex items-center gap-1.5 flex-wrap">
                       {allAttendees.map(name => (
