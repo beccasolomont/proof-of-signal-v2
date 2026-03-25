@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import EmptyState from '@/components/illustrations/EmptyState';
 import DemoInsight from '@/components/DemoInsight';
 import { SIGNAL_TAGS } from '@/lib/signalTagger';
-import { TAG_DEFINITIONS, THEME_INSIGHTS, MIN_SIGNALS_FOR_INSIGHT, DEMO_USER_NAME } from '@/lib/constants';
+import { TAG_DEFINITIONS, THEME_INSIGHTS, MIN_SIGNALS_FOR_INSIGHT, DEMO_USER_NAME, getTagColorClass } from '@/lib/constants';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -58,7 +58,7 @@ const Patterns = () => {
                 {topTags.map(([tag, count]) => (
                   <div key={tag} className="flex items-center gap-3">
                     <button onClick={() => setSelectedTag(tag)} className="focus:outline-none">
-                      <Badge variant="secondary" className="bg-rose-soft text-navy border-0 text-xs w-36 justify-center cursor-pointer hover:bg-blush/40 transition-colors">
+                      <Badge variant="secondary" className={`${getTagColorClass(tag)} text-navy border-0 text-xs w-36 justify-center cursor-pointer hover:opacity-80 transition-all`}>
                         {tag}
                       </Badge>
                     </button>
@@ -115,7 +115,7 @@ const Patterns = () => {
                     <div key={s.id} className="flex items-center gap-3">
                       <span className="text-xs text-muted-foreground w-20 flex-shrink-0">{s.date}</span>
                       <p className="text-sm text-foreground line-clamp-1 flex-1">{s.text}</p>
-                      <Badge variant="secondary" className="bg-rose-soft text-navy border-0 text-xs flex-shrink-0">
+                      <Badge variant="secondary" className={`${getTagColorClass(s.tag)} text-navy border-0 text-xs flex-shrink-0`}>
                         {s.tag}
                       </Badge>
                       <Select
