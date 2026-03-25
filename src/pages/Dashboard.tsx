@@ -293,10 +293,8 @@ const Dashboard = () => {
                           {isCustom && !active && (
                             <span
                               onClick={e => {
-                                e.stopPropagation();
-                                const updated = customTags.filter(t => t !== tag);
-                                setCustomTags(updated);
-                                localStorage.setItem('customSignalTags', JSON.stringify(updated));
+                              e.stopPropagation();
+                                removeCustomTag(tag);
                                 setSelectedTags(prev => prev.filter(t => t !== tag));
                               }}
                               className="ml-1 inline-flex"
