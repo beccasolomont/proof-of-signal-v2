@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Lock, ChevronDown, ChevronUp, Filter, Tag } from 'lucide-react';
+import { CheckCircle2, Lock, Filter, Tag, Plus, X } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/use-voice-input';
 import { useToast } from '@/hooks/use-toast';
 import VoiceInputButton from '@/components/VoiceInputButton';
