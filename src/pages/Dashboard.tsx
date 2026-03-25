@@ -365,8 +365,8 @@ const Dashboard = () => {
 
               {displayedSignals.length === 0 ? (
                 <EmptyState
-                  title={showFlaggedOnly || selectedTag ? 'No matching signals' : 'No signals yet'}
-                  description={showFlaggedOnly || selectedTag ? 'Try adjusting your filters.' : 'Log your first signal above to start building your record.'}
+                  title={showFlaggedOnly || selectedTags.length > 0 ? 'No matching signals' : 'No signals yet'}
+                  description={showFlaggedOnly || selectedTags.length > 0 ? 'Try adjusting your filters.' : 'Log your first signal above to start building your record.'}
                 />
               ) : (
                 <div className="space-y-6">
