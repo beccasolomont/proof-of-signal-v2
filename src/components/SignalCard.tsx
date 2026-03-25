@@ -136,7 +136,7 @@ const SignalCard = ({ signal, onUpdate, onDelete, onToggleFlag }: SignalCardProp
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {SIGNAL_TAGS.map(t => (
+                  {allTags.map(t => (
                     <SelectItem key={t} value={t}>{t}</SelectItem>
                   ))}
                 </SelectContent>
