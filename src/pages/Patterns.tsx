@@ -4,7 +4,9 @@
  * Displays signal theme distribution, contextual insight copy based on dominant theme,
  * clickable tag definitions, and a categorised flagged-signal review section.
  */
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Lightbulb } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { useApp, FLAG_CATEGORIES, FlagCategory } from '@/contexts/AppContext';
 import { Badge } from '@/components/ui/badge';
 import EmptyState from '@/components/illustrations/EmptyState';
@@ -38,6 +40,38 @@ const Patterns = () => {
   const filteredFlagged = categoryFilter === 'all'
     ? flaggedSignals
     : flaggedSignals.filter(s => s.flagCategory === categoryFilter);
+
+  // Coaching tips cache: signal id → tip text (or 'loading' / 'error')
+  const [tips, setTips] = useState<Record<string, string>>({});
+  const fetchedRef = useRef<Set<string>>(new Set());
+
+  const fetchTip = useCallback(async (id: string, text: string, tag: string, flagCategory?: string) => {
+    if (fetchedRef.current.has(id)) return;
+    fetchedRef.current.add(id);
+    setTips(prev => ({ ...prev, [id]: '__loading__' }));
+
+    try {
+      const { data, error } = await supabase.functions.invoke('coaching-tip', {
+        body: { text, tag, flagCategory },
+      });
+      if (!error && data?.tip) {
+        setTips(prev => ({ ...prev, [id]: data.tip }));
+      } else {
+        setTips(prev => ({ ...prev, [id]: '__error__' }));
+      }
+    } catch {
+      setTips(prev => ({ ...prev, [id]: '__error__' }));
+    }
+  }, []);
+
+  // Fetch tips for flagged signals on mount / when flagged signals change
+  useEffect(() => {
+    flaggedSignals.forEach(s => {
+      if (!fetchedRef.current.has(s.id)) {
+        fetchTip(s.id, s.text, s.tag, s.flagCategory);
+      }
+    });
+  }, [flaggedSignals, fetchTip]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -120,29 +154,45 @@ const Patterns = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-3">
-                  {filteredFlagged.map(s => (
-                    <div key={s.id} className="flex items-center gap-3">
-                      <span className="text-xs text-muted-foreground w-20 flex-shrink-0">{s.date}</span>
-                      <p className="text-sm text-foreground line-clamp-1 flex-1">{s.text}</p>
-                      <Badge variant="secondary" className={`${getTagColorClass(s.tag)} text-navy border-0 text-xs flex-shrink-0`}>
-                        {s.tag}
-                      </Badge>
-                      <Select
-                        value={s.flagCategory || 'Watch closely'}
-                        onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
-                      >
-                        <SelectTrigger className="w-44 h-7 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {FLAG_CATEGORIES.map(cat => (
-                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  ))}
+                <div className="space-y-4">
+                  {filteredFlagged.map(s => {
+                    const tip = tips[s.id];
+                    return (
+                      <div key={s.id} className="space-y-1.5">
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-muted-foreground w-20 flex-shrink-0">{s.date}</span>
+                          <p className="text-sm text-foreground line-clamp-1 flex-1">{s.text}</p>
+                          <Badge variant="secondary" className={`${getTagColorClass(s.tag)} text-navy border-0 text-xs flex-shrink-0`}>
+                            {s.tag}
+                          </Badge>
+                          <Select
+                            value={s.flagCategory || 'Watch closely'}
+                            onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
+                          >
+                            <SelectTrigger className="w-44 h-7 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {FLAG_CATEGORIES.map(cat => (
+                                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {/* Coaching tip */}
+                        {tip && tip !== '__error__' && (
+                          <div className="flex items-start gap-2 ml-[calc(5rem+0.75rem)]">
+                            <Lightbulb className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
+                            {tip === '__loading__' ? (
+                              <span className="text-xs text-muted-foreground italic">Generating coaching tip…</span>
+                            ) : (
+                              <p className="text-xs text-muted-foreground leading-relaxed italic">{tip}</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                   {filteredFlagged.length === 0 && (
                     <p className="text-sm text-muted-foreground text-center py-4">No flagged signals in this category.</p>
                   )}
