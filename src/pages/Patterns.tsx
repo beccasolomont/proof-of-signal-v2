@@ -52,7 +52,7 @@ const Patterns = () => {
             description={`Log ${signalsNeeded} more signal${signalsNeeded > 1 ? 's' : ''} to unlock your first pattern insight.`}
           />
         ) : (
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="grid lg:grid-cols-3 gap-6">
             {/* Tag Distribution */}
             <div className="bg-card rounded-2xl border border-border p-6">
               <h2 className="text-lg font-serif text-navy mb-4">Signal themes</h2>
@@ -79,8 +79,11 @@ const Patterns = () => {
             {/* Radar Chart */}
             <SignalRadarChart tagCounts={tagCounts} totalSignals={totalSignals} />
 
+            {/* Signal Calendar */}
+            <SignalHeatmapCalendar signals={signals} />
+
             {/* Insight — full width */}
-            <div className="bg-gradient-to-br from-rose-soft to-blush-light rounded-2xl p-6 border border-blush/20 lg:col-span-2">
+            <div className="bg-gradient-to-br from-rose-soft to-blush-light rounded-2xl p-6 border border-blush/20 lg:col-span-3">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-navy flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-primary-foreground text-xs font-bold">✦</span>
@@ -97,12 +100,11 @@ const Patterns = () => {
                 </div>
               </div>
             </div>
-            {/* Signal Calendar Heatmap — full width */}
-            <SignalHeatmapCalendar signals={signals} />
+            {/* Flagged Review — spans full width */}
 
             {/* Flagged Review — spans full width */}
             {flaggedSignals.length > 0 && (
-              <div className="bg-card rounded-2xl border border-border p-6 lg:col-span-2">
+              <div className="bg-card rounded-2xl border border-border p-6 lg:col-span-3">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-serif text-navy">Flagged for review</h2>
                   <Select value={categoryFilter} onValueChange={setCategoryFilter}>
