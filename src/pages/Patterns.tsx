@@ -13,6 +13,7 @@ import { SIGNAL_TAGS } from '@/lib/signalTagger';
 import { TAG_DEFINITIONS, THEME_INSIGHTS, MIN_SIGNALS_FOR_INSIGHT, DEMO_USER_NAME, getTagColorClass } from '@/lib/constants';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import SignalRadarChart from '@/components/SignalRadarChart';
+import SignalHeatmapCalendar from '@/components/SignalHeatmapCalendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Patterns = () => {
