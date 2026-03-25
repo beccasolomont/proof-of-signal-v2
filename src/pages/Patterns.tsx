@@ -154,29 +154,45 @@ const Patterns = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-3">
-                  {filteredFlagged.map(s => (
-                    <div key={s.id} className="flex items-center gap-3">
-                      <span className="text-xs text-muted-foreground w-20 flex-shrink-0">{s.date}</span>
-                      <p className="text-sm text-foreground line-clamp-1 flex-1">{s.text}</p>
-                      <Badge variant="secondary" className={`${getTagColorClass(s.tag)} text-navy border-0 text-xs flex-shrink-0`}>
-                        {s.tag}
-                      </Badge>
-                      <Select
-                        value={s.flagCategory || 'Watch closely'}
-                        onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
-                      >
-                        <SelectTrigger className="w-44 h-7 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {FLAG_CATEGORIES.map(cat => (
-                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  ))}
+                <div className="space-y-4">
+                  {filteredFlagged.map(s => {
+                    const tip = tips[s.id];
+                    return (
+                      <div key={s.id} className="space-y-1.5">
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-muted-foreground w-20 flex-shrink-0">{s.date}</span>
+                          <p className="text-sm text-foreground line-clamp-1 flex-1">{s.text}</p>
+                          <Badge variant="secondary" className={`${getTagColorClass(s.tag)} text-navy border-0 text-xs flex-shrink-0`}>
+                            {s.tag}
+                          </Badge>
+                          <Select
+                            value={s.flagCategory || 'Watch closely'}
+                            onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
+                          >
+                            <SelectTrigger className="w-44 h-7 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {FLAG_CATEGORIES.map(cat => (
+                                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {/* Coaching tip */}
+                        {tip && tip !== '__error__' && (
+                          <div className="flex items-start gap-2 ml-[calc(5rem+0.75rem)]">
+                            <Lightbulb className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
+                            {tip === '__loading__' ? (
+                              <span className="text-xs text-muted-foreground italic">Generating coaching tip…</span>
+                            ) : (
+                              <p className="text-xs text-muted-foreground leading-relaxed italic">{tip}</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                   {filteredFlagged.length === 0 && (
                     <p className="text-sm text-muted-foreground text-center py-4">No flagged signals in this category.</p>
                   )}
