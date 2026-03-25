@@ -14,6 +14,8 @@ import {
   CONFIRMATION_TIMEOUT_MS,
   MIN_SIGNALS_FOR_INSIGHT,
   DEMO_USER_NAME,
+  FUTURE_DATE_ERROR,
+  isFutureDate,
 } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
