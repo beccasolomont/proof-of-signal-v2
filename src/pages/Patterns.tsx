@@ -41,6 +41,38 @@ const Patterns = () => {
     ? flaggedSignals
     : flaggedSignals.filter(s => s.flagCategory === categoryFilter);
 
+  // Coaching tips cache: signal id → tip text (or 'loading' / 'error')
+  const [tips, setTips] = useState<Record<string, string>>({});
+  const fetchedRef = useRef<Set<string>>(new Set());
+
+  const fetchTip = useCallback(async (id: string, text: string, tag: string, flagCategory?: string) => {
+    if (fetchedRef.current.has(id)) return;
+    fetchedRef.current.add(id);
+    setTips(prev => ({ ...prev, [id]: '__loading__' }));
+
+    try {
+      const { data, error } = await supabase.functions.invoke('coaching-tip', {
+        body: { text, tag, flagCategory },
+      });
+      if (!error && data?.tip) {
+        setTips(prev => ({ ...prev, [id]: data.tip }));
+      } else {
+        setTips(prev => ({ ...prev, [id]: '__error__' }));
+      }
+    } catch {
+      setTips(prev => ({ ...prev, [id]: '__error__' }));
+    }
+  }, []);
+
+  // Fetch tips for flagged signals on mount / when flagged signals change
+  useEffect(() => {
+    flaggedSignals.forEach(s => {
+      if (!fetchedRef.current.has(s.id)) {
+        fetchTip(s.id, s.text, s.tag, s.flagCategory);
+      }
+    });
+  }, [flaggedSignals, fetchTip]);
+
   return (
     <div className="min-h-screen bg-background">
       <div className="w-full px-8 md:px-16 lg:px-24 py-10 max-w-[1600px] mx-auto">
