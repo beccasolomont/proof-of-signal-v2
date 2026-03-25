@@ -9,6 +9,7 @@
  */
 import { useState } from 'react';
 import { Signal } from '@/contexts/AppContext';
+import { useApp } from '@/contexts/AppContext';
 import { SIGNAL_TAGS } from '@/lib/signalTagger';
 import { getTagColorClass } from '@/lib/constants';
 import { Badge } from '@/components/ui/badge';
