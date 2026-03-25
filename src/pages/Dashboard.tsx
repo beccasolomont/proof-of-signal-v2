@@ -69,7 +69,7 @@ const Dashboard = () => {
       setText('');
       setMeeting('');
       setAttendees('');
-      setShowContext(false);
+      
       setJustLogged(true);
       setTimeout(() => setJustLogged(false), CONFIRMATION_TIMEOUT_MS);
     } catch {
