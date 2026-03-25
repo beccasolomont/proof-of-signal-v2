@@ -10,8 +10,18 @@ import { supabase } from '@/integrations/supabase/client';
 import type { User } from '@supabase/supabase-js';
 
 /** Categories that can be assigned to flagged signals for review. */
-export const FLAG_CATEGORIES = ['Promotion evidence', 'Performance review', 'Difficult conversation', 'Watch closely', 'Uncategorized'] as const;
+export const FLAG_CATEGORIES = ['Promotion evidence', 'Performance review', 'Difficult conversation', 'Watch closely', 'Growth area'] as const;
 export type FlagCategory = typeof FLAG_CATEGORIES[number];
+
+/** Deterministic tag → flag-category mapping used when a signal is first flagged. */
+export const TAG_TO_FLAG_CATEGORY: Record<string, FlagCategory> = {
+  'Recognition': 'Promotion evidence',
+  'Missed Credit': 'Watch closely',
+  'Personal Milestone': 'Promotion evidence',
+  'Manager Signal': 'Watch closely',
+  'Org / Political Signal': 'Difficult conversation',
+  'Constructive Feedback': 'Growth area',
+};
 
 /** A single career signal logged by the user. */
 export interface Signal {
