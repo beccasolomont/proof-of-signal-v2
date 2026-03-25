@@ -75,8 +75,11 @@ const Patterns = () => {
               </div>
             </div>
 
-            {/* Insight */}
-            <div className="bg-gradient-to-br from-rose-soft to-blush-light rounded-2xl p-6 border border-blush/20">
+            {/* Radar Chart */}
+            <SignalRadarChart tagCounts={tagCounts} totalSignals={totalSignals} />
+
+            {/* Insight — full width */}
+            <div className="bg-gradient-to-br from-rose-soft to-blush-light rounded-2xl p-6 border border-blush/20 lg:col-span-2">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-navy flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-primary-foreground text-xs font-bold">✦</span>
@@ -93,7 +96,6 @@ const Patterns = () => {
                 </div>
               </div>
             </div>
-
             {/* Flagged Review — spans full width */}
             {flaggedSignals.length > 0 && (
               <div className="bg-card rounded-2xl border border-border p-6 lg:col-span-2">
