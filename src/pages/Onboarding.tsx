@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { classifySignal } from '@/lib/signalTagger';
-import { MAX_SIGNAL_LENGTH } from '@/lib/constants';
+import { MAX_SIGNAL_LENGTH, isFutureDate, FUTURE_DATE_ERROR } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
