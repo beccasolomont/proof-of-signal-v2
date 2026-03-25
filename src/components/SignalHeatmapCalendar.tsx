@@ -1,10 +1,10 @@
 /**
- * SignalHeatmapCalendar — monthly calendar where each day is shaded
+ * SignalHeatmapCalendar — compact monthly calendar where each day is shaded
  * by how many signals were logged on that date. Clicking a day opens
  * a dialog listing that day's signals.
  */
 import { useState, useMemo } from 'react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, subMonths, addMonths, isSameMonth, isToday } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, subMonths, addMonths, isToday, parseISO } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Signal } from '@/contexts/AppContext';
 import { Badge } from '@/components/ui/badge';
@@ -16,13 +16,19 @@ interface SignalHeatmapCalendarProps {
   signals: Signal[];
 }
 
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 const SignalHeatmapCalendar = ({ signals }: SignalHeatmapCalendarProps) => {
-  const [currentMonth, setCurrentMonth] = useState(() => startOfMonth(new Date()));
+  // Default to the month of the most recent signal, or current month
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    if (signals.length > 0) {
+      const sorted = [...signals].sort((a, b) => b.date.localeCompare(a.date));
+      return startOfMonth(parseISO(sorted[0].date));
+    }
+    return startOfMonth(new Date());
+  });
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-  // Group signals by date string
   const signalsByDate = useMemo(() => {
     const map: Record<string, Signal[]> = {};
     signals.forEach(s => {
@@ -32,7 +38,6 @@ const SignalHeatmapCalendar = ({ signals }: SignalHeatmapCalendarProps) => {
     return map;
   }, [signals]);
 
-  // Find the max count across all dates for opacity scaling
   const maxCount = useMemo(() => {
     const counts = Object.values(signalsByDate).map(arr => arr.length);
     return Math.max(...counts, 1);
@@ -44,46 +49,45 @@ const SignalHeatmapCalendar = ({ signals }: SignalHeatmapCalendarProps) => {
   });
 
   const startDayOfWeek = getDay(days[0]);
-
   const selectedSignals = selectedDate ? (signalsByDate[selectedDate] || []) : [];
 
   return (
-    <div className="bg-card rounded-2xl border border-border p-6 lg:col-span-2">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-serif text-navy">Signal calendar</h2>
-        <div className="flex items-center gap-2">
+    <div className="bg-card rounded-2xl border border-border p-4">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-sm font-serif text-navy">Signal calendar</h2>
+        <div className="flex items-center gap-1">
           <button
             onClick={() => setCurrentMonth(prev => subMonths(prev, 1))}
-            className="p-1 rounded-md hover:bg-muted transition-colors"
+            className="p-0.5 rounded hover:bg-muted transition-colors"
           >
-            <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+            <ChevronLeft className="w-3.5 h-3.5 text-muted-foreground" />
           </button>
-          <span className="text-sm font-medium text-navy w-32 text-center">
-            {format(currentMonth, 'MMMM yyyy')}
+          <span className="text-xs font-medium text-navy w-24 text-center">
+            {format(currentMonth, 'MMM yyyy')}
           </span>
           <button
             onClick={() => setCurrentMonth(prev => addMonths(prev, 1))}
-            className="p-1 rounded-md hover:bg-muted transition-colors"
+            className="p-0.5 rounded hover:bg-muted transition-colors"
           >
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
           </button>
         </div>
       </div>
 
       {/* Weekday headers */}
-      <div className="grid grid-cols-7 gap-1 mb-1">
-        {WEEKDAYS.map(d => (
-          <div key={d} className="text-center text-xs text-muted-foreground font-medium py-1">
+      <div className="grid grid-cols-7 gap-0.5 mb-0.5">
+        {WEEKDAYS.map((d, i) => (
+          <div key={i} className="text-center text-[10px] text-muted-foreground font-medium py-0.5">
             {d}
           </div>
         ))}
       </div>
 
-      {/* Day cells */}
-      <div className="grid grid-cols-7 gap-1">
-        {/* Empty cells for offset */}
+      {/* Day cells — compact fixed height, no aspect-square */}
+      <div className="grid grid-cols-7 gap-0.5">
         {Array.from({ length: startDayOfWeek }).map((_, i) => (
-          <div key={`empty-${i}`} className="aspect-square" />
+          <div key={`empty-${i}`} className="h-7" />
         ))}
 
         {days.map(day => {
@@ -97,26 +101,23 @@ const SignalHeatmapCalendar = ({ signals }: SignalHeatmapCalendarProps) => {
               key={dateStr}
               onClick={() => count > 0 && setSelectedDate(dateStr)}
               className={cn(
-                'aspect-square rounded-lg flex flex-col items-center justify-center text-xs relative transition-all',
-                count > 0 ? 'cursor-pointer hover:ring-2 hover:ring-navy/30' : 'cursor-default',
+                'h-7 rounded flex flex-col items-center justify-center relative transition-all',
+                count > 0 ? 'cursor-pointer hover:ring-1 hover:ring-navy/30' : 'cursor-default',
                 today && 'ring-1 ring-navy/40',
               )}
               style={count > 0 ? { backgroundColor: `hsl(var(--navy) / ${opacity})` } : undefined}
             >
               <span className={cn(
-                'text-xs',
+                'text-[11px] leading-none',
                 count > 0 && opacity > 0.5 ? 'text-primary-foreground' : 'text-foreground',
-                !isSameMonth(day, currentMonth) && 'text-muted-foreground',
               )}>
                 {format(day, 'd')}
               </span>
               {count > 0 && (
-                <span className={cn(
-                  'text-[10px] leading-none mt-0.5 font-medium',
-                  opacity > 0.5 ? 'text-primary-foreground/80' : 'text-navy/70',
-                )}>
-                  {count}
-                </span>
+                <div
+                  className="w-1 h-1 rounded-full mt-0.5"
+                  style={{ backgroundColor: opacity > 0.5 ? 'hsl(var(--primary-foreground))' : 'hsl(var(--navy))' }}
+                />
               )}
             </button>
           );
@@ -124,16 +125,16 @@ const SignalHeatmapCalendar = ({ signals }: SignalHeatmapCalendarProps) => {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-2 mt-4 justify-end">
-        <span className="text-[10px] text-muted-foreground">Less</span>
+      <div className="flex items-center gap-1.5 mt-2 justify-end">
+        <span className="text-[9px] text-muted-foreground">Less</span>
         {[0.15, 0.35, 0.55, 0.75, 0.9].map((op, i) => (
           <div
             key={i}
-            className="w-3 h-3 rounded-sm"
+            className="w-2.5 h-2.5 rounded-sm"
             style={{ backgroundColor: `hsl(var(--navy) / ${op})` }}
           />
         ))}
-        <span className="text-[10px] text-muted-foreground">More</span>
+        <span className="text-[9px] text-muted-foreground">More</span>
       </div>
 
       {/* Day detail dialog */}
@@ -141,7 +142,7 @@ const SignalHeatmapCalendar = ({ signals }: SignalHeatmapCalendarProps) => {
         <DialogContent className="rounded-2xl max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-xl font-serif text-navy">
-              {selectedDate ? format(new Date(selectedDate + 'T00:00:00'), 'MMMM d, yyyy') : ''}
+              {selectedDate ? format(parseISO(selectedDate), 'MMMM d, yyyy') : ''}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 max-h-[60vh] overflow-y-auto">
