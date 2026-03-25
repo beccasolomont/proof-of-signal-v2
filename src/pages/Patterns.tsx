@@ -97,6 +97,9 @@ const Patterns = () => {
                 </div>
               </div>
             </div>
+            {/* Signal Calendar Heatmap — full width */}
+            <SignalHeatmapCalendar signals={signals} />
+
             {/* Flagged Review — spans full width */}
             {flaggedSignals.length > 0 && (
               <div className="bg-card rounded-2xl border border-border p-6 lg:col-span-2">
