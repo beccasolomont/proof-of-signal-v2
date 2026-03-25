@@ -45,7 +45,12 @@ const Dashboard = () => {
   const [lastTag, setLastTag] = useState('');
   const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
   const [selectedAttendee, setSelectedAttendee] = useState<string | null>(null);
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [customTags, setCustomTags] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('customSignalTags') || '[]');
+    } catch { return []; }
+  });
   const [isClassifying, setIsClassifying] = useState(false);
 
   const { supported: voiceSupported, listening, toggle: toggleVoice } = useVoiceInput((transcript) => {
