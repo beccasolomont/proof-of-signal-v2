@@ -17,6 +17,17 @@ export const MIN_SIGNALS_FOR_INSIGHT = 3;
 /** Duration (ms) to show the "signal captured" confirmation before resetting. */
 export const CONFIRMATION_TIMEOUT_MS = 2000;
 
+/** Validation message shown when a user picks a future date. */
+export const FUTURE_DATE_ERROR = 'Signals can only be logged for today or earlier.';
+
+/** Returns true if the given YYYY-MM-DD string is strictly after today. */
+export const isFutureDate = (dateStr: string): boolean => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const selected = new Date(dateStr + 'T00:00:00');
+  return selected > today;
+};
+
 /** Demo user first-name used to branch insight copy. */
 export const DEMO_USER_NAME = 'Diana';
 

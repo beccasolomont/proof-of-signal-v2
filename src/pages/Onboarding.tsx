@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { classifySignal } from '@/lib/signalTagger';
-import { MAX_SIGNAL_LENGTH } from '@/lib/constants';
+import { MAX_SIGNAL_LENGTH, isFutureDate, FUTURE_DATE_ERROR } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -75,11 +75,16 @@ const Onboarding = () => {
 
   /** Submit the first signal and finalise the onboarding profile. */
   const submitSignal = async () => {
+    const signalDate = new Date().toISOString().split('T')[0];
+    if (isFutureDate(signalDate)) {
+      toast({ variant: 'destructive', title: 'Invalid date', description: FUTURE_DATE_ERROR });
+      return;
+    }
     setIsClassifying(true);
     try {
       const tag = await classifySignal(signalText);
       setAssignedTag(tag);
-      addSignal({ text: signalText, date: new Date().toISOString().split('T')[0], tag, flagged: false });
+      addSignal({ text: signalText, date: signalDate, tag, flagged: false });
       setUser({ firstName, careerStage, goals, onboardingComplete: true });
       setSubmitted(true);
     } catch {

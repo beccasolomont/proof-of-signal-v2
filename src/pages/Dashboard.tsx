@@ -14,6 +14,8 @@ import {
   CONFIRMATION_TIMEOUT_MS,
   MIN_SIGNALS_FOR_INSIGHT,
   DEMO_USER_NAME,
+  FUTURE_DATE_ERROR,
+  isFutureDate,
 } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -50,8 +52,14 @@ const Dashboard = () => {
     setText(prev => prev ? `${prev} ${transcript}`.slice(0, MAX_SIGNAL_LENGTH) : transcript.slice(0, MAX_SIGNAL_LENGTH));
   });
 
+  const dateIsFuture = isFutureDate(date);
+
   /** Submit a new signal and show the confirmation state briefly. */
   const handleSubmit = async () => {
+    if (isFutureDate(date)) {
+      toast({ variant: 'destructive', title: 'Invalid date', description: FUTURE_DATE_ERROR });
+      return;
+    }
     setIsClassifying(true);
     try {
       const tag = await classifySignal(text);
@@ -191,12 +199,18 @@ const Dashboard = () => {
                     )}
                   </div>
                   <div className="flex items-center justify-between">
-                    <Input
-                      type="date"
-                      value={date}
-                      onChange={e => setDate(e.target.value)}
-                      className="rounded-xl w-40"
-                    />
+                    <div>
+                      <Input
+                        type="date"
+                        value={date}
+                        onChange={e => setDate(e.target.value)}
+                        max={new Date().toISOString().split('T')[0]}
+                        className="rounded-xl w-40"
+                      />
+                      {dateIsFuture && (
+                        <p className="text-xs text-destructive mt-1">{FUTURE_DATE_ERROR}</p>
+                      )}
+                    </div>
                     <span className="text-xs text-muted-foreground">{text.length}/{MAX_SIGNAL_LENGTH}</span>
                   </div>
                   {/* Optional context */}
@@ -225,7 +239,7 @@ const Dashboard = () => {
                   )}
                   <Button
                     onClick={handleSubmit}
-                    disabled={!text.trim() || isClassifying}
+                    disabled={!text.trim() || isClassifying || dateIsFuture}
                     className="w-full bg-navy hover:bg-navy-light text-primary-foreground rounded-xl py-5"
                   >
                     {isClassifying ? 'Classifying…' : 'Log signal'}
