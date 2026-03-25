@@ -65,7 +65,7 @@ const SignalCard = ({ signal, onUpdate, onDelete, onToggleFlag }: SignalCardProp
                 onValueChange={val => onUpdate(signal.id, { tag: val })}
               >
                 <SelectTrigger className="h-auto p-0 border-0 shadow-none w-auto">
-                  <Badge variant="secondary" className="bg-rose-soft text-navy border-0 cursor-pointer text-xs">
+                  <Badge variant="secondary" className={`${getTagColorClass(signal.tag)} text-navy border-0 cursor-pointer text-xs`}>
                     {signal.tag}
                   </Badge>
                 </SelectTrigger>

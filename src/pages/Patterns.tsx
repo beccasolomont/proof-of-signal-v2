@@ -115,7 +115,7 @@ const Patterns = () => {
                     <div key={s.id} className="flex items-center gap-3">
                       <span className="text-xs text-muted-foreground w-20 flex-shrink-0">{s.date}</span>
                       <p className="text-sm text-foreground line-clamp-1 flex-1">{s.text}</p>
-                      <Badge variant="secondary" className="bg-rose-soft text-navy border-0 text-xs flex-shrink-0">
+                      <Badge variant="secondary" className={`${getTagColorClass(s.tag)} text-navy border-0 text-xs flex-shrink-0`}>
                         {s.tag}
                       </Badge>
                       <Select

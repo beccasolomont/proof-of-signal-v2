@@ -86,6 +86,13 @@
     --input: 220 30% 18%;
     --ring: 340 80% 65%;
 
+    --tag-recognition: 340 50% 25%;
+    --tag-missed-credit: 25 50% 25%;
+    --tag-constructive-feedback: 200 40% 25%;
+    --tag-manager-signal: 260 35% 28%;
+    --tag-org-political: 170 35% 25%;
+    --tag-personal-milestone: 45 45% 25%;
+
     --sidebar-background: 220 40% 8%;
     --sidebar-foreground: 30 20% 92%;
     --sidebar-primary: 340 80% 70%;

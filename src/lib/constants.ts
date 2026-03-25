@@ -88,6 +88,23 @@ export const TAG_DEFINITIONS: Record<string, string> = {
     'A meaningful moment in your own career progression — first time leading something, a stretch assignment, a door that opened.',
 };
 
+/**
+ * Per-category badge colors using CSS variable names from index.css.
+ * Returns Tailwind-compatible inline style objects for bg + text.
+ */
+export const TAG_COLORS: Record<string, string> = {
+  'Recognition': 'bg-[hsl(var(--tag-recognition))]',
+  'Missed Credit': 'bg-[hsl(var(--tag-missed-credit))]',
+  'Constructive Feedback': 'bg-[hsl(var(--tag-constructive-feedback))]',
+  'Manager Signal': 'bg-[hsl(var(--tag-manager-signal))]',
+  'Org / Political Signal': 'bg-[hsl(var(--tag-org-political))]',
+  'Personal Milestone': 'bg-[hsl(var(--tag-personal-milestone))]',
+};
+
+/** Returns the tag-specific bg class, falling back to rose-soft. */
+export const getTagColorClass = (tag: string): string =>
+  TAG_COLORS[tag] || 'bg-rose-soft';
+
 /** Demo-mode Diana insight copy, shared by Dashboard and Patterns. */
 export const DEMO_INSIGHT_TITLE = 'Your signals from this week';
 export const DEMO_INSIGHT_BODY =
