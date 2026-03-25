@@ -48,7 +48,7 @@ const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) =>
             />
             <Radar
               name="Signals"
-              dataKey="count"
+              dataKey="value"
               stroke="hsl(var(--navy))"
               fill="url(#radarGradient)"
               strokeWidth={2}
