@@ -104,7 +104,7 @@ const Patterns = () => {
 
             {/* Flagged Review — spans full width */}
             {flaggedSignals.length > 0 && (
-              <div className="bg-card rounded-2xl border border-border p-6 lg:col-span-2">
+              <div className="bg-card rounded-2xl border border-border p-6 lg:col-span-3">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-serif text-navy">Flagged for review</h2>
                   <Select value={categoryFilter} onValueChange={setCategoryFilter}>
