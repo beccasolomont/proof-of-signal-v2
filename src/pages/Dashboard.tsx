@@ -213,30 +213,21 @@ const Dashboard = () => {
                     </div>
                     <span className="text-xs text-muted-foreground">{text.length}/{MAX_SIGNAL_LENGTH}</span>
                   </div>
-                  {/* Optional context */}
-                  <button
-                    onClick={() => setShowContext(!showContext)}
-                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showContext ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                    Add context (optional)
-                  </button>
-                  {showContext && (
-                    <div className="grid grid-cols-2 gap-3 animate-fade-in">
-                      <Input
-                        value={meeting}
-                        onChange={e => setMeeting(e.target.value)}
-                        placeholder="Meeting name"
-                        className="rounded-xl text-sm"
-                      />
-                      <Input
-                        value={attendees}
-                        onChange={e => setAttendees(e.target.value)}
-                        placeholder="Attendees"
-                        className="rounded-xl text-sm"
-                      />
-                    </div>
-                  )}
+                  {/* Optional context — always visible */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      value={meeting}
+                      onChange={e => setMeeting(e.target.value)}
+                      placeholder="Meeting name (optional)"
+                      className="rounded-xl text-sm"
+                    />
+                    <Input
+                      value={attendees}
+                      onChange={e => setAttendees(e.target.value)}
+                      placeholder="Attendees (optional)"
+                      className="rounded-xl text-sm"
+                    />
+                  </div>
                   <Button
                     onClick={handleSubmit}
                     disabled={!text.trim() || isClassifying || dateIsFuture}
