@@ -48,6 +48,7 @@ export interface UserProfile {
 interface AppState {
   user: UserProfile;
   signals: Signal[];
+  customTags: string[];
   isDemo: boolean;
   loading: boolean;
   setUser: (user: Partial<UserProfile>) => void;
@@ -55,6 +56,8 @@ interface AppState {
   updateSignal: (id: string, updates: Partial<Signal>) => void;
   deleteSignal: (id: string) => void;
   toggleFlag: (id: string) => void;
+  addCustomTag: (tag: string) => void;
+  removeCustomTag: (tag: string) => void;
   resetToDemo: () => void;
   resetToClean: () => void;
   loadUserData: (authUser: User) => Promise<void>;
