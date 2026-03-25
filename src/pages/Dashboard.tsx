@@ -330,7 +330,7 @@ const Dashboard = () => {
                         value={customTagInput}
                         onChange={e => setCustomTagInput(e.target.value)}
                         placeholder="+ Custom tag"
-                        className="h-7 w-24 text-xs rounded-full border-dashed px-2.5"
+                        className="h-auto w-24 text-xs rounded-full border-dashed px-2.5 py-1 bg-card text-muted-foreground font-semibold"
                       />
                     </form>
                   </div>
