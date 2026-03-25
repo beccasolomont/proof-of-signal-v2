@@ -41,6 +41,7 @@ const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) =>
               </radialGradient>
             </defs>
             <PolarGrid stroke="hsl(var(--border))" />
+            <PolarRadiusAxis domain={[0, maxCount + baseline]} tick={false} axisLine={false} />
             <PolarAngleAxis
               dataKey="category"
               tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
