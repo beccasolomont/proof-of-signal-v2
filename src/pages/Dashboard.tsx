@@ -21,14 +21,14 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Lock, ChevronDown, ChevronUp, Filter, Tag } from 'lucide-react';
+import { CheckCircle2, Lock, Filter, Tag, Plus, X } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/use-voice-input';
 import { useToast } from '@/hooks/use-toast';
 import VoiceInputButton from '@/components/VoiceInputButton';
 import DemoInsight from '@/components/DemoInsight';
 import EmptyState from '@/components/illustrations/EmptyState';
 import SignalCard from '@/components/SignalCard';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { getTagColorClass } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
 import { format, parseISO } from 'date-fns';
 
@@ -38,14 +38,19 @@ const Dashboard = () => {
   const { toast } = useToast();
   const [text, setText] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [showContext, setShowContext] = useState(false);
+  const [customTagInput, setCustomTagInput] = useState('');
   const [meeting, setMeeting] = useState('');
   const [attendees, setAttendees] = useState('');
   const [justLogged, setJustLogged] = useState(false);
   const [lastTag, setLastTag] = useState('');
   const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
   const [selectedAttendee, setSelectedAttendee] = useState<string | null>(null);
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [customTags, setCustomTags] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('customSignalTags') || '[]');
+    } catch { return []; }
+  });
   const [isClassifying, setIsClassifying] = useState(false);
 
   const { supported: voiceSupported, listening, toggle: toggleVoice } = useVoiceInput((transcript) => {
@@ -69,7 +74,7 @@ const Dashboard = () => {
       setText('');
       setMeeting('');
       setAttendees('');
-      setShowContext(false);
+      
       setJustLogged(true);
       setTimeout(() => setJustLogged(false), CONFIRMATION_TIMEOUT_MS);
     } catch {
@@ -113,7 +118,7 @@ const Dashboard = () => {
   const displayedSignals = signals
     .filter(s => !showFlaggedOnly || s.flagged)
     .filter(s => !selectedAttendee || (s.context?.attendees?.toLowerCase().includes(selectedAttendee.toLowerCase())))
-    .filter(s => !selectedTag || s.tag === selectedTag)
+    .filter(s => selectedTags.length === 0 || selectedTags.includes(s.tag))
     .sort((a, b) => b.date.localeCompare(a.date));
 
   /** Group signals by month for visual separation. */
@@ -213,30 +218,21 @@ const Dashboard = () => {
                     </div>
                     <span className="text-xs text-muted-foreground">{text.length}/{MAX_SIGNAL_LENGTH}</span>
                   </div>
-                  {/* Optional context */}
-                  <button
-                    onClick={() => setShowContext(!showContext)}
-                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showContext ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                    Add context (optional)
-                  </button>
-                  {showContext && (
-                    <div className="grid grid-cols-2 gap-3 animate-fade-in">
-                      <Input
-                        value={meeting}
-                        onChange={e => setMeeting(e.target.value)}
-                        placeholder="Meeting name"
-                        className="rounded-xl text-sm"
-                      />
-                      <Input
-                        value={attendees}
-                        onChange={e => setAttendees(e.target.value)}
-                        placeholder="Attendees"
-                        className="rounded-xl text-sm"
-                      />
-                    </div>
-                  )}
+                  {/* Optional context — always visible */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      value={meeting}
+                      onChange={e => setMeeting(e.target.value)}
+                      placeholder="Meeting name (optional)"
+                      className="rounded-xl text-sm"
+                    />
+                    <Input
+                      value={attendees}
+                      onChange={e => setAttendees(e.target.value)}
+                      placeholder="Attendees (optional)"
+                      className="rounded-xl text-sm"
+                    />
+                  </div>
                   <Button
                     onClick={handleSubmit}
                     disabled={!text.trim() || isClassifying || dateIsFuture}
@@ -280,22 +276,64 @@ const Dashboard = () => {
               <div className="flex items-center gap-3 mb-4 flex-wrap">
                 <h2 className="text-lg font-serif text-navy">Your signals</h2>
                 <div className="flex items-center gap-2 ml-auto flex-wrap">
-                  {/* Tag filter */}
-                  <Select
-                    value={selectedTag || 'all'}
-                    onValueChange={val => setSelectedTag(val === 'all' ? null : val)}
-                  >
-                    <SelectTrigger className="h-8 w-[160px] text-xs rounded-full border-border">
-                      <Tag className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
-                      <SelectValue placeholder="All tags" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All tags</SelectItem>
-                      {SIGNAL_TAGS.map(tag => (
-                        <SelectItem key={tag} value={tag}>{tag}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {/* Tag filter chips — multi-select */}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+                    {[...SIGNAL_TAGS, ...customTags].map(tag => {
+                      const active = selectedTags.includes(tag);
+                      const isCustom = customTags.includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          onClick={() => setSelectedTags(prev =>
+                            active ? prev.filter(t => t !== tag) : [...prev, tag]
+                          )}
+                          className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                            active
+                              ? 'bg-navy text-primary-foreground border-navy'
+                              : 'bg-card text-muted-foreground border-border hover:border-blush/40'
+                          }`}
+                        >
+                          {tag}
+                          {isCustom && !active && (
+                            <span
+                              onClick={e => {
+                                e.stopPropagation();
+                                const updated = customTags.filter(t => t !== tag);
+                                setCustomTags(updated);
+                                localStorage.setItem('customSignalTags', JSON.stringify(updated));
+                                setSelectedTags(prev => prev.filter(t => t !== tag));
+                              }}
+                              className="ml-1 inline-flex"
+                            >
+                              <X className="w-3 h-3" />
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                    {/* Custom tag input */}
+                    <form
+                      onSubmit={e => {
+                        e.preventDefault();
+                        const trimmed = customTagInput.trim();
+                        if (trimmed && !SIGNAL_TAGS.includes(trimmed as any) && !customTags.includes(trimmed)) {
+                          const updated = [...customTags, trimmed];
+                          setCustomTags(updated);
+                          localStorage.setItem('customSignalTags', JSON.stringify(updated));
+                          setCustomTagInput('');
+                        }
+                      }}
+                      className="inline-flex"
+                    >
+                      <Input
+                        value={customTagInput}
+                        onChange={e => setCustomTagInput(e.target.value)}
+                        placeholder="+ Custom tag"
+                        className="h-7 w-24 text-xs rounded-full border-dashed px-2.5"
+                      />
+                    </form>
+                  </div>
                   {allAttendees.length > 0 && (
                     <div className="flex items-center gap-1.5 flex-wrap">
                       {allAttendees.map(name => (
@@ -327,8 +365,8 @@ const Dashboard = () => {
 
               {displayedSignals.length === 0 ? (
                 <EmptyState
-                  title={showFlaggedOnly || selectedTag ? 'No matching signals' : 'No signals yet'}
-                  description={showFlaggedOnly || selectedTag ? 'Try adjusting your filters.' : 'Log your first signal above to start building your record.'}
+                  title={showFlaggedOnly || selectedTags.length > 0 ? 'No matching signals' : 'No signals yet'}
+                  description={showFlaggedOnly || selectedTags.length > 0 ? 'Try adjusting your filters.' : 'Log your first signal above to start building your record.'}
                 />
               ) : (
                 <div className="space-y-6">
