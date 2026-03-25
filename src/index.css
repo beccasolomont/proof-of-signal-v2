@@ -43,6 +43,13 @@
     --rose-soft: 340 60% 95%;
     --cream: 0 0% 100%;
 
+    --tag-recognition: 340 72% 90%;
+    --tag-missed-credit: 25 70% 92%;
+    --tag-constructive-feedback: 200 50% 90%;
+    --tag-manager-signal: 260 45% 92%;
+    --tag-org-political: 170 40% 90%;
+    --tag-personal-milestone: 45 65% 90%;
+
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 220 50% 15%;
     --sidebar-primary: 220 58% 28%;
