@@ -118,7 +118,7 @@ const Dashboard = () => {
   const displayedSignals = signals
     .filter(s => !showFlaggedOnly || s.flagged)
     .filter(s => !selectedAttendee || (s.context?.attendees?.toLowerCase().includes(selectedAttendee.toLowerCase())))
-    .filter(s => !selectedTag || s.tag === selectedTag)
+    .filter(s => selectedTags.length === 0 || selectedTags.includes(s.tag))
     .sort((a, b) => b.date.localeCompare(a.date));
 
   /** Group signals by month for visual separation. */
