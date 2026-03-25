@@ -9,6 +9,7 @@
  */
 import { useState } from 'react';
 import { Signal } from '@/contexts/AppContext';
+import { useApp } from '@/contexts/AppContext';
 import { SIGNAL_TAGS } from '@/lib/signalTagger';
 import { getTagColorClass } from '@/lib/constants';
 import { Badge } from '@/components/ui/badge';
@@ -27,9 +28,7 @@ interface SignalCardProps {
 }
 
 const SignalCard = ({ signal, onUpdate, onDelete, onToggleFlag }: SignalCardProps) => {
-  const customTags: string[] = (() => {
-    try { return JSON.parse(localStorage.getItem('customSignalTags') || '[]'); } catch { return []; }
-  })();
+  const { customTags } = useApp();
   const allTags = [...SIGNAL_TAGS, ...customTags];
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);

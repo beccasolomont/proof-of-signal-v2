@@ -34,7 +34,7 @@ import { format, parseISO } from 'date-fns';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, signals, addSignal, updateSignal, deleteSignal, toggleFlag } = useApp();
+  const { user, signals, customTags, addSignal, updateSignal, deleteSignal, toggleFlag, addCustomTag, removeCustomTag } = useApp();
   const { toast } = useToast();
   const [text, setText] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -46,11 +46,6 @@ const Dashboard = () => {
   const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
   const [selectedAttendee, setSelectedAttendee] = useState<string | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [customTags, setCustomTags] = useState<string[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem('customSignalTags') || '[]');
-    } catch { return []; }
-  });
   const [isClassifying, setIsClassifying] = useState(false);
 
   const { supported: voiceSupported, listening, toggle: toggleVoice } = useVoiceInput((transcript) => {
@@ -298,10 +293,8 @@ const Dashboard = () => {
                           {isCustom && !active && (
                             <span
                               onClick={e => {
-                                e.stopPropagation();
-                                const updated = customTags.filter(t => t !== tag);
-                                setCustomTags(updated);
-                                localStorage.setItem('customSignalTags', JSON.stringify(updated));
+                              e.stopPropagation();
+                                removeCustomTag(tag);
                                 setSelectedTags(prev => prev.filter(t => t !== tag));
                               }}
                               className="ml-1 inline-flex"
@@ -318,9 +311,7 @@ const Dashboard = () => {
                         e.preventDefault();
                         const trimmed = customTagInput.trim();
                         if (trimmed && !SIGNAL_TAGS.includes(trimmed as any) && !customTags.includes(trimmed)) {
-                          const updated = [...customTags, trimmed];
-                          setCustomTags(updated);
-                          localStorage.setItem('customSignalTags', JSON.stringify(updated));
+                          addCustomTag(trimmed);
                           setCustomTagInput('');
                         }
                       }}

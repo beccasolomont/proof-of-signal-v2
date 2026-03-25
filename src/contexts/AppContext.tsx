@@ -48,6 +48,7 @@ export interface UserProfile {
 interface AppState {
   user: UserProfile;
   signals: Signal[];
+  customTags: string[];
   isDemo: boolean;
   loading: boolean;
   setUser: (user: Partial<UserProfile>) => void;
@@ -55,6 +56,8 @@ interface AppState {
   updateSignal: (id: string, updates: Partial<Signal>) => void;
   deleteSignal: (id: string) => void;
   toggleFlag: (id: string) => void;
+  addCustomTag: (tag: string) => void;
+  removeCustomTag: (tag: string) => void;
   resetToDemo: () => void;
   resetToClean: () => void;
   loadUserData: (authUser: User) => Promise<void>;
@@ -142,6 +145,9 @@ function rowToSignal(row: {
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUserState] = useState<UserProfile>(defaultUser);
   const [signals, setSignals] = useState<Signal[]>([]);
+  const [customTags, setCustomTags] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem('customSignalTags') || '[]'); } catch { return []; }
+  });
   const [isDemo, setIsDemo] = useState(false);
   const [loading, setLoading] = useState(false);
   const [authUser, setAuthUser] = useState<User | null>(null);
@@ -287,6 +293,23 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const addCustomTag = (tag: string) => {
+    setCustomTags(prev => {
+      if (prev.includes(tag)) return prev;
+      const updated = [...prev, tag];
+      localStorage.setItem('customSignalTags', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const removeCustomTag = (tag: string) => {
+    setCustomTags(prev => {
+      const updated = prev.filter(t => t !== tag);
+      localStorage.setItem('customSignalTags', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   /** Load the built-in Diana demo dataset (in-memory only). */
   const resetToDemo = () => {
     setIsDemo(true);
@@ -308,12 +331,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setIsDemo(false);
     setUserState(defaultUser);
     setSignals([]);
+    setCustomTags([]);
+    localStorage.removeItem('customSignalTags');
   };
 
   return (
     <AppContext.Provider value={{
-      user, signals, isDemo, loading,
+      user, signals, customTags, isDemo, loading,
       setUser, addSignal, updateSignal, deleteSignal, toggleFlag,
+      addCustomTag, removeCustomTag,
       resetToDemo, resetToClean, loadUserData,
     }}>
       {children}
