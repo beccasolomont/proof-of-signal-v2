@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import SignalRadarChart from '@/components/SignalRadarChart';
 import SignalHeatmapCalendar from '@/components/SignalHeatmapCalendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { supabase } from '@/integrations/supabase/client';
 
 const Patterns = () => {
   const { signals, user, updateSignal } = useApp();
