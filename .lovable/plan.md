@@ -1,32 +1,37 @@
 
 
-## Signal Category Color Proposal
+## Add Radar Chart to Patterns Page
 
-Your brand palette centers on **navy** (hsl 220, 58%, 28%), **blush/rose** (hsl 340, 80%, 70%), and soft neutrals. The six category colors below are derived from that foundation — each is distinct enough for visual separation while staying harmonious with the brand.
+### What
+A radar/spider chart visualizing the six signal categories, where each axis length reflects frequency and fill color deepens with higher counts. Placed in the existing 2-column grid alongside the current "Signal themes" bar chart card.
 
-### Proposed colors
+### Layout Change
+The current 2-column grid has: (1) Signal themes bar chart, (2) Insight card. The radar chart will be added as a third card. New layout:
+- Row 1: Signal themes (left), Radar chart (right)
+- Row 2: Insight card (full width)
+- Row 3: Flagged review (full width, as before)
 
-| Signal Category        | Background              | Text        | Rationale                                    |
-|------------------------|-------------------------|-------------|----------------------------------------------|
-| **Recognition**        | `hsl(340, 72%, 90%)`    | Navy        | Rose-soft — already your secondary; warm, positive |
-| **Missed Credit**      | `hsl(25, 70%, 92%)`     | Navy        | Warm amber tint — subtle caution without alarm |
-| **Constructive Feedback** | `hsl(200, 50%, 90%)` | Navy        | Cool blue — neutral, developmental tone      |
-| **Manager Signal**     | `hsl(260, 45%, 92%)`    | Navy        | Muted lavender — watchful, distinct from blue |
-| **Org / Political Signal** | `hsl(170, 40%, 90%)` | Navy        | Soft teal — organizational, strategic feel   |
-| **Personal Milestone** | `hsl(45, 65%, 90%)`     | Navy        | Warm gold — celebratory but restrained       |
+### Implementation
 
-### Implementation plan
+**1. New component: `src/components/SignalRadarChart.tsx`**
+- Accepts `tagCounts: Record<string, number>` as a prop
+- Uses Recharts `RadarChart`, `PolarGrid`, `PolarAngleAxis`, `Radar` from the already-installed `recharts` package
+- Data: array of `{ category: string, count: number }` for all 6 `SIGNAL_TAGS` (including zeros)
+- Radar fill uses navy (`hsl(220, 58%, 28%)`) with opacity derived from max frequency — the higher the max count, the deeper/more opaque the fill (range 0.3–0.8)
+- Stroke in navy, grid lines in muted border color
+- Wrapped in `ChartContainer` from `src/components/ui/chart.tsx` for consistent styling
+- Compact, no external legend needed (axis labels serve as legend)
 
-1. **Add a `TAG_COLORS` constant** in `src/lib/constants.ts` mapping each tag to its `bg` and `text` class (or inline HSL values).
+**2. Update `src/pages/Patterns.tsx`**
+- Import `SignalRadarChart`
+- Pass the existing `tagCounts` object to the new component
+- Move the insight card to span full width (`lg:col-span-2`)
+- Radar chart takes the right column in row 1
 
-2. **Create a helper** `getTagColor(tag: string)` that returns the appropriate classes, falling back to the existing `bg-rose-soft text-navy` for unknown tags.
-
-3. **Apply in three locations** (badge styling only, no layout or behavior changes):
-   - `SignalCard.tsx` — the inline tag badge
-   - `Patterns.tsx` — the theme distribution badges and flagged-signal badges
-   - `Dashboard.tsx` — if tag badges appear in the timeline
-
-4. **Add CSS variables** for each category color in `src/index.css` (both light and dark themes) so dark mode stays consistent.
-
-All changes are purely cosmetic — badge background colors shift per category. No new UI elements, no behavior changes.
+### Technical Details
+- Recharts is already a project dependency (used by `chart.tsx`)
+- All 6 categories always shown on axes (even with 0 count) for consistent shape
+- Fill opacity calculated as: `0.3 + (maxCount / totalSignals) * 0.5`, clamped to 0.8
+- Category labels shortened for readability on small viewports (e.g., "Org / Political Signal" → "Org / Political")
+- No new dependencies needed
 
