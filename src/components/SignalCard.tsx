@@ -74,7 +74,7 @@ const SignalCard = ({ signal, onUpdate, onDelete, onToggleFlag }: SignalCardProp
                   </Badge>
                 </SelectTrigger>
                 <SelectContent>
-                  {SIGNAL_TAGS.map(t => (
+                  {allTags.map(t => (
                     <SelectItem key={t} value={t}>{t}</SelectItem>
                   ))}
                 </SelectContent>
