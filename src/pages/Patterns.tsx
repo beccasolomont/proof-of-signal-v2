@@ -36,7 +36,7 @@ const Patterns = () => {
   const flaggedSignals = signals.filter(s => s.flagged);
   const filteredFlagged = categoryFilter === 'all'
     ? flaggedSignals
-    : flaggedSignals.filter(s => (s.flagCategory || 'Uncategorized') === categoryFilter);
+    : flaggedSignals.filter(s => (s.flagCategory || 'ai-pending') === categoryFilter);
 
   return (
     <div className="min-h-screen bg-background">
