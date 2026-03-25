@@ -1,4 +1,4 @@
-import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import { SIGNAL_TAGS } from '@/lib/signalTagger';
 
 const SHORT_LABELS: Record<string, string> = {
