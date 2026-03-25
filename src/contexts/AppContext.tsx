@@ -258,6 +258,40 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (authUser && !isDemo) {
       await supabase.from('signals').update({ flagged: newFlagged }).eq('id', id);
     }
+
+    // When newly flagged and no category yet, request AI suggestion
+    if (newFlagged && !signal.flagCategory) {
+      suggestFlagCategory(id, signal.text, signal.tag);
+    }
+  };
+
+  /** Call AI to suggest a flag subcategory, then apply it if the user hasn't overridden. */
+  const suggestFlagCategory = async (id: string, text: string, tag: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('suggest-flag-category', {
+        body: { text, tag },
+      });
+
+      if (error || !data?.category) {
+        console.warn('AI flag suggestion failed:', error?.message || 'no category returned');
+        return;
+      }
+
+      // Only apply if user hasn't already manually set a category
+      setSignals(prev => prev.map(s => {
+        if (s.id === id && !s.flagCategory) {
+          const updated = { ...s, flagCategory: data.category as FlagCategory };
+          // Persist to DB
+          if (authUser && !isDemo) {
+            supabase.from('signals').update({ flag_category: data.category }).eq('id', id);
+          }
+          return updated;
+        }
+        return s;
+      }));
+    } catch (err) {
+      console.warn('AI flag suggestion error:', err);
+    }
   };
 
   const deleteSignal = async (id: string) => {
