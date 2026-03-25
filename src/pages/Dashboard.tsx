@@ -38,7 +38,7 @@ const Dashboard = () => {
   const { toast } = useToast();
   const [text, setText] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [showContext, setShowContext] = useState(false);
+  const [customTagInput, setCustomTagInput] = useState('');
   const [meeting, setMeeting] = useState('');
   const [attendees, setAttendees] = useState('');
   const [justLogged, setJustLogged] = useState(false);
