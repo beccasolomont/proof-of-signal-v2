@@ -239,7 +239,7 @@ const Dashboard = () => {
                   )}
                   <Button
                     onClick={handleSubmit}
-                    disabled={!text.trim() || isClassifying}
+                    disabled={!text.trim() || isClassifying || dateIsFuture}
                     className="w-full bg-navy hover:bg-navy-light text-primary-foreground rounded-xl py-5"
                   >
                     {isClassifying ? 'Classifying…' : 'Log signal'}
