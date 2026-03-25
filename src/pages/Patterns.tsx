@@ -79,6 +79,9 @@ const Patterns = () => {
             {/* Radar Chart */}
             <SignalRadarChart tagCounts={tagCounts} totalSignals={totalSignals} />
 
+            {/* Signal Calendar */}
+            <SignalHeatmapCalendar signals={signals} />
+
             {/* Insight — full width */}
             <div className="bg-gradient-to-br from-rose-soft to-blush-light rounded-2xl p-6 border border-blush/20 lg:col-span-3">
               <div className="flex items-start gap-3">
