@@ -27,6 +27,10 @@ interface SignalCardProps {
 }
 
 const SignalCard = ({ signal, onUpdate, onDelete, onToggleFlag }: SignalCardProps) => {
+  const customTags: string[] = (() => {
+    try { return JSON.parse(localStorage.getItem('customSignalTags') || '[]'); } catch { return []; }
+  })();
+  const allTags = [...SIGNAL_TAGS, ...customTags];
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [editText, setEditText] = useState(signal.text);
@@ -70,7 +74,7 @@ const SignalCard = ({ signal, onUpdate, onDelete, onToggleFlag }: SignalCardProp
                   </Badge>
                 </SelectTrigger>
                 <SelectContent>
-                  {SIGNAL_TAGS.map(t => (
+                  {allTags.map(t => (
                     <SelectItem key={t} value={t}>{t}</SelectItem>
                   ))}
                 </SelectContent>
@@ -132,7 +136,7 @@ const SignalCard = ({ signal, onUpdate, onDelete, onToggleFlag }: SignalCardProp
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {SIGNAL_TAGS.map(t => (
+                  {allTags.map(t => (
                     <SelectItem key={t} value={t}>{t}</SelectItem>
                   ))}
                 </SelectContent>
