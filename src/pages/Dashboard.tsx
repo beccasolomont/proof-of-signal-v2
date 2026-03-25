@@ -28,7 +28,7 @@ import VoiceInputButton from '@/components/VoiceInputButton';
 import DemoInsight from '@/components/DemoInsight';
 import EmptyState from '@/components/illustrations/EmptyState';
 import SignalCard from '@/components/SignalCard';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { getTagColorClass } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
 import { format, parseISO } from 'date-fns';
 
