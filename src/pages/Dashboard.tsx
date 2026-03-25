@@ -199,12 +199,18 @@ const Dashboard = () => {
                     )}
                   </div>
                   <div className="flex items-center justify-between">
-                    <Input
-                      type="date"
-                      value={date}
-                      onChange={e => setDate(e.target.value)}
-                      className="rounded-xl w-40"
-                    />
+                    <div>
+                      <Input
+                        type="date"
+                        value={date}
+                        onChange={e => setDate(e.target.value)}
+                        max={new Date().toISOString().split('T')[0]}
+                        className="rounded-xl w-40"
+                      />
+                      {dateIsFuture && (
+                        <p className="text-xs text-destructive mt-1">{FUTURE_DATE_ERROR}</p>
+                      )}
+                    </div>
                     <span className="text-xs text-muted-foreground">{text.length}/{MAX_SIGNAL_LENGTH}</span>
                   </div>
                   {/* Optional context */}
