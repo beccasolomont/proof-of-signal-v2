@@ -52,8 +52,14 @@ const Dashboard = () => {
     setText(prev => prev ? `${prev} ${transcript}`.slice(0, MAX_SIGNAL_LENGTH) : transcript.slice(0, MAX_SIGNAL_LENGTH));
   });
 
+  const dateIsFuture = isFutureDate(date);
+
   /** Submit a new signal and show the confirmation state briefly. */
   const handleSubmit = async () => {
+    if (isFutureDate(date)) {
+      toast({ variant: 'destructive', title: 'Invalid date', description: FUTURE_DATE_ERROR });
+      return;
+    }
     setIsClassifying(true);
     try {
       const tag = await classifySignal(text);
