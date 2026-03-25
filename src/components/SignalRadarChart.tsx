@@ -50,7 +50,7 @@ const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) =>
   return (
     <div className="bg-card rounded-2xl border border-border p-6">
       <h2 className="text-lg font-serif text-navy mb-4">Signal radar</h2>
-      <div className="w-full aspect-square max-h-[280px]">
+      <div className="w-full flex items-center justify-center" style={{ height: 280 }}>
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={data} cx="50%" cy="50%" outerRadius="70%">
             <defs>
