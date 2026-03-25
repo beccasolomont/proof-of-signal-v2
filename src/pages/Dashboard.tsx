@@ -326,11 +326,11 @@ const Dashboard = () => {
                       }}
                       className="inline-flex"
                     >
-                      <Input
+                      <input
                         value={customTagInput}
                         onChange={e => setCustomTagInput(e.target.value)}
                         placeholder="+ Custom tag"
-                        className="h-auto w-28 text-xs rounded-full border-dashed px-2.5 py-1 bg-card text-muted-foreground"
+                        className="text-xs px-2.5 py-1 rounded-full border border-dashed border-border bg-card text-muted-foreground hover:border-blush/40 transition-colors outline-none w-28 placeholder:text-muted-foreground"
                       />
                     </form>
                   </div>
