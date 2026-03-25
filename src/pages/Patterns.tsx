@@ -129,16 +129,13 @@ const Patterns = () => {
                         {s.tag}
                       </Badge>
                       <Select
-                        value={s.flagCategory || 'ai-pending'}
+                        value={s.flagCategory || 'Watch closely'}
                         onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
                       >
                         <SelectTrigger className="w-44 h-7 text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="ai-pending" disabled className="text-muted-foreground italic">
-                            AI suggestion pending
-                          </SelectItem>
                           {FLAG_CATEGORIES.map(cat => (
                             <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                           ))}

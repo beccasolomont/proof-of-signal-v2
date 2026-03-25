@@ -263,44 +263,19 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const signal = signals.find(s => s.id === id);
     if (!signal) return;
     const newFlagged = !signal.flagged;
-    setSignals(prev => prev.map(s => s.id === id ? { ...s, flagged: newFlagged } : s));
+    // Auto-assign category from tag mapping when flagging
+    const autoCategory = newFlagged && !signal.flagCategory
+      ? TAG_TO_FLAG_CATEGORY[signal.tag] || 'Watch closely'
+      : undefined;
+    const updates: Partial<Signal> = { flagged: newFlagged };
+    if (autoCategory) updates.flagCategory = autoCategory;
+
+    setSignals(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
 
     if (authUser && !isDemo) {
-      await supabase.from('signals').update({ flagged: newFlagged }).eq('id', id);
-    }
-
-    // When newly flagged and no category yet, request AI suggestion
-    if (newFlagged && !signal.flagCategory) {
-      suggestFlagCategory(id, signal.text, signal.tag);
-    }
-  };
-
-  /** Call AI to suggest a flag subcategory, then apply it if the user hasn't overridden. */
-  const suggestFlagCategory = async (id: string, text: string, tag: string) => {
-    try {
-      const { data, error } = await supabase.functions.invoke('suggest-flag-category', {
-        body: { text, tag },
-      });
-
-      if (error || !data?.category) {
-        console.warn('AI flag suggestion failed:', error?.message || 'no category returned');
-        return;
-      }
-
-      // Only apply if user hasn't already manually set a category
-      setSignals(prev => prev.map(s => {
-        if (s.id === id && !s.flagCategory) {
-          const updated = { ...s, flagCategory: data.category as FlagCategory };
-          // Persist to DB
-          if (authUser && !isDemo) {
-            supabase.from('signals').update({ flag_category: data.category }).eq('id', id);
-          }
-          return updated;
-        }
-        return s;
-      }));
-    } catch (err) {
-      console.warn('AI flag suggestion error:', err);
+      const dbUpdates: Record<string, string | boolean> = { flagged: newFlagged };
+      if (autoCategory) dbUpdates.flag_category = autoCategory;
+      await supabase.from('signals').update(dbUpdates).eq('id', id);
     }
   };
 
