@@ -58,7 +58,7 @@ const Patterns = () => {
                 {topTags.map(([tag, count]) => (
                   <div key={tag} className="flex items-center gap-3">
                     <button onClick={() => setSelectedTag(tag)} className="focus:outline-none">
-                      <Badge variant="secondary" className="bg-rose-soft text-navy border-0 text-xs w-36 justify-center cursor-pointer hover:bg-blush/40 transition-colors">
+                      <Badge variant="secondary" className={`${getTagColorClass(tag)} text-navy border-0 text-xs w-36 justify-center cursor-pointer hover:opacity-80 transition-all`}>
                         {tag}
                       </Badge>
                     </button>
