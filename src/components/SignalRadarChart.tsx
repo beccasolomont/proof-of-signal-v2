@@ -1,4 +1,4 @@
-import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import { SIGNAL_TAGS } from '@/lib/signalTagger';
 
 const SHORT_LABELS: Record<string, string> = {
@@ -16,12 +16,14 @@ interface SignalRadarChartProps {
 }
 
 const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) => {
+  const maxCount = Math.max(...SIGNAL_TAGS.map(t => tagCounts[t] || 0), 1);
+
+  // Use a small baseline so zero-count categories still render on the radar
+  const baseline = maxCount * 0.08;
   const data = SIGNAL_TAGS.map(tag => ({
     category: SHORT_LABELS[tag] || tag,
-    count: tagCounts[tag] || 0,
+    value: (tagCounts[tag] || 0) + baseline,
   }));
-
-  const maxCount = Math.max(...data.map(d => d.count), 1);
   // Outer opacity deepens with higher max frequency
   const outerOpacity = Math.min(0.35 + (maxCount / Math.max(totalSignals, 1)) * 0.55, 0.9);
   const innerOpacity = outerOpacity * 0.15;
@@ -39,13 +41,14 @@ const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) =>
               </radialGradient>
             </defs>
             <PolarGrid stroke="hsl(var(--border))" />
+            <PolarRadiusAxis domain={[0, maxCount + baseline]} tick={false} axisLine={false} />
             <PolarAngleAxis
               dataKey="category"
               tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
             />
             <Radar
               name="Signals"
-              dataKey="count"
+              dataKey="value"
               stroke="hsl(var(--navy))"
               fill="url(#radarGradient)"
               strokeWidth={2}
