@@ -311,9 +311,7 @@ const Dashboard = () => {
                         e.preventDefault();
                         const trimmed = customTagInput.trim();
                         if (trimmed && !SIGNAL_TAGS.includes(trimmed as any) && !customTags.includes(trimmed)) {
-                          const updated = [...customTags, trimmed];
-                          setCustomTags(updated);
-                          localStorage.setItem('customSignalTags', JSON.stringify(updated));
+                          addCustomTag(trimmed);
                           setCustomTagInput('');
                         }
                       }}
