@@ -22,7 +22,9 @@ const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) =>
   }));
 
   const maxCount = Math.max(...data.map(d => d.count), 1);
-  const fillOpacity = Math.min(0.3 + (maxCount / Math.max(totalSignals, 1)) * 0.5, 0.8);
+  // Outer opacity deepens with higher max frequency
+  const outerOpacity = Math.min(0.35 + (maxCount / Math.max(totalSignals, 1)) * 0.55, 0.9);
+  const innerOpacity = outerOpacity * 0.15;
 
   return (
     <div className="bg-card rounded-2xl border border-border p-6">
@@ -30,6 +32,12 @@ const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) =>
       <div className="w-full aspect-square max-h-[280px]">
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={data} cx="50%" cy="50%" outerRadius="70%">
+            <defs>
+              <radialGradient id="radarGradient" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="hsl(var(--navy))" stopOpacity={innerOpacity} />
+                <stop offset="100%" stopColor="hsl(var(--navy))" stopOpacity={outerOpacity} />
+              </radialGradient>
+            </defs>
             <PolarGrid stroke="hsl(var(--border))" />
             <PolarAngleAxis
               dataKey="category"
@@ -39,8 +47,7 @@ const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) =>
               name="Signals"
               dataKey="count"
               stroke="hsl(var(--navy))"
-              fill="hsl(var(--navy))"
-              fillOpacity={fillOpacity}
+              fill="url(#radarGradient)"
               strokeWidth={2}
             />
           </RadarChart>
