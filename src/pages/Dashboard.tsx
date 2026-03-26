@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Lock, Filter, Tag, Plus, X, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Lock, Filter, Tag, Plus, X, ArrowRight, ChevronDown } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/use-voice-input';
 import { useToast } from '@/hooks/use-toast';
 import VoiceInputButton from '@/components/VoiceInputButton';
@@ -32,7 +32,10 @@ import EmptyState from '@/components/illustrations/EmptyState';
 import SignalCard from '@/components/SignalCard';
 import { getTagColorClass } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { format, parseISO } from 'date-fns';
+import dianaAvatar from '@/assets/diana-avatar.png';
 
 const Dashboard = () => {
   const navigate = useNavigate();
