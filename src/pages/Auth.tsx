@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useApp } from '@/contexts/AppContext';
+
 import { useOnboardingRedirect } from '@/hooks/useOnboardingRedirect';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
