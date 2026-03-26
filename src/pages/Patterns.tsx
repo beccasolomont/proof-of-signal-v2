@@ -27,7 +27,7 @@ const Patterns = () => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [isReclassifying, setIsReclassifying] = useState(false);
-  const [checklistItems, setChecklistItems] = useState<{ text: string; priority: 'high' | 'medium' | 'low' }[]>([]);
+  const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]);
 
   const tagCounts = SIGNAL_TAGS.reduce((acc, tag) => {
     acc[tag] = signals.filter(s => s.tag === tag).length;
