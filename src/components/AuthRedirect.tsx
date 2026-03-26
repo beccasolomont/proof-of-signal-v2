@@ -6,6 +6,7 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useApp } from '@/contexts/AppContext';
+import { DEMO_FORCE_ONBOARDING_KEY } from '@/lib/constants';
 import { Loader2 } from 'lucide-react';
 
 const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
@@ -25,9 +26,9 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
   }
 
   // Check for demo force-onboarding flag
-  const forceOnboarding = sessionStorage.getItem('demo_force_onboarding');
+  const forceOnboarding = sessionStorage.getItem(DEMO_FORCE_ONBOARDING_KEY);
   if (forceOnboarding === 'true') {
-    sessionStorage.removeItem('demo_force_onboarding');
+    sessionStorage.removeItem(DEMO_FORCE_ONBOARDING_KEY);
     return <Navigate to="/onboarding" replace />;
   }
 

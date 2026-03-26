@@ -4,7 +4,7 @@
  * Displays signal theme distribution, contextual insight copy based on dominant theme,
  * clickable tag definitions, and a categorised flagged-signal review section.
  */
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Lightbulb, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useApp, FLAG_CATEGORIES, FlagCategory } from '@/contexts/AppContext';
@@ -12,7 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import EmptyState from '@/components/illustrations/EmptyState';
 import { SIGNAL_TAGS } from '@/lib/signalTagger';
-import { TAG_DEFINITIONS, MIN_SIGNALS_FOR_INSIGHT, getTagColorClass } from '@/lib/constants';
+import { TAG_DEFINITIONS, MIN_SIGNALS_FOR_INSIGHT, getTagColorClass, DEFAULT_FLAG_CATEGORY } from '@/lib/constants';
+import type { ChecklistItem } from '@/lib/constants';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import SignalRadarChart from '@/components/SignalRadarChart';
 import SignalHeatmapCalendar from '@/components/SignalHeatmapCalendar';
@@ -26,7 +27,7 @@ const Patterns = () => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [isReclassifying, setIsReclassifying] = useState(false);
-  const [checklistItems, setChecklistItems] = useState<{ text: string; priority: 'high' | 'medium' | 'low' }[]>([]);
+  const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]);
 
   const tagCounts = SIGNAL_TAGS.reduce((acc, tag) => {
     acc[tag] = signals.filter(s => s.tag === tag).length;
@@ -178,7 +179,7 @@ const Patterns = () => {
                           </div>
                           <div className="w-full">
                             <Select
-                              value={s.flagCategory || 'Watch closely'}
+                              value={s.flagCategory || DEFAULT_FLAG_CATEGORY}
                               onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
                             >
                               <SelectTrigger className="w-full h-7 text-xs">

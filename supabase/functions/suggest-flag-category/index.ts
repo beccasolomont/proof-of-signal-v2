@@ -11,6 +11,7 @@ const VALID_CATEGORIES = [
   "Performance review",
   "Difficult conversation",
   "Watch closely",
+  "Growth area",
 ] as const;
 
 const SYSTEM_PROMPT = `You are a career signal analyst. Given a workplace signal and its category tag, suggest the most appropriate review subcategory using the suggest_flag_category tool.
@@ -25,12 +26,15 @@ const SYSTEM_PROMPT = `You are a career signal analyst. Given a workplace signal
 
 4. **Watch closely** — The signal indicates something to monitor: shifts in manager behavior, organizational changes, subtle political dynamics, or early warning signs.
 
+5. **Growth area** — The signal highlights a development opportunity or skill gap the user should actively work on — coaching feedback, self-identified weaknesses, or recurring patterns that suggest room for professional growth.
+
 ## Rules
 - Consider both the signal text AND its category tag when deciding.
 - Recognition + senior stakeholder visibility → likely "Promotion evidence"
 - Missed Credit or tension signals → likely "Difficult conversation"
 - Manager behavior changes or org shifts → likely "Watch closely"
 - Feedback or milestone signals → likely "Performance review"
+- Constructive feedback about skill development → likely "Growth area"
 - When uncertain, choose the category that would be most actionable for the user.`;
 
 serve(async (req) => {

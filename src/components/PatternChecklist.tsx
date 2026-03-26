@@ -4,21 +4,17 @@
 import { useState } from 'react';
 import { CheckCircle2, Circle, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-
-interface ChecklistItem {
-  text: string;
-  priority: 'high' | 'medium' | 'low';
-}
+import type { ChecklistItem } from '@/lib/constants';
 
 interface PatternChecklistProps {
   items: ChecklistItem[];
 }
 
-const priorityConfig = {
+const PRIORITY_CONFIG = {
   high: { label: 'High', className: 'bg-[hsl(var(--destructive))] text-[hsl(var(--destructive-foreground))]' },
   medium: { label: 'Med', className: 'bg-[hsl(var(--tag-manager-signal))] text-navy' },
   low: { label: 'Low', className: 'bg-[hsl(var(--tag-personal-milestone))] text-navy' },
-};
+} as const;
 
 const PatternChecklist = ({ items }: PatternChecklistProps) => {
   const [checked, setChecked] = useState<Set<number>>(new Set());
@@ -54,7 +50,7 @@ const PatternChecklist = ({ items }: PatternChecklistProps) => {
       <div className="space-y-3">
         {items.map((item, i) => {
           const isDone = checked.has(i);
-          const config = priorityConfig[item.priority];
+          const config = PRIORITY_CONFIG[item.priority];
           return (
             <button
               key={i}

@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useApp } from '@/contexts/AppContext';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
+import { DEMO_FORCE_ONBOARDING_KEY } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowRight, Mail, Loader2, Eye, EyeOff } from 'lucide-react';
@@ -36,10 +37,10 @@ const Auth = () => {
   const { user: profile, loading: profileLoading } = useApp();
 
   // Check for demo force-onboarding flag
-  const forceOnboarding = sessionStorage.getItem('demo_force_onboarding');
+  const forceOnboarding = sessionStorage.getItem(DEMO_FORCE_ONBOARDING_KEY);
   const redirectPath = (!loading && !profileLoading && user)
     ? (forceOnboarding === 'true'
-      ? (() => { sessionStorage.removeItem('demo_force_onboarding'); return '/onboarding'; })()
+      ? (() => { sessionStorage.removeItem(DEMO_FORCE_ONBOARDING_KEY); return '/onboarding'; })()
       : (profile.onboardingComplete ? '/dashboard' : '/onboarding'))
     : null;
 
