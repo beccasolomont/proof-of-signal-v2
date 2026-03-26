@@ -58,6 +58,7 @@ interface AppState {
   updateSignal: (id: string, updates: Partial<Signal>) => void;
   deleteSignal: (id: string) => void;
   toggleFlag: (id: string) => void;
+  reclassifyFlaggedSignals: () => Promise<void>;
   addCustomTag: (tag: string) => void;
   removeCustomTag: (tag: string) => void;
   resetToDemo: () => Promise<void>;
