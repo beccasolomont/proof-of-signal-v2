@@ -13,13 +13,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, ArrowLeft, CalendarIcon } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/use-voice-input';
 import { useToast } from '@/hooks/use-toast';
 import VoiceInputButton from '@/components/VoiceInputButton';
 import CareerStageSelector from '@/components/CareerStageSelector';
 import GoalSelector from '@/components/GoalSelector';
 import HeroIllustration from '@/components/illustrations/HeroIllustration';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 const Onboarding = () => {
   const [step, setStep] = useState(0);
@@ -30,6 +34,7 @@ const Onboarding = () => {
   const [careerStage, setCareerStage] = useState(user.careerStage);
   const [goals, setGoals] = useState<string[]>([]);
   const [signalText, setSignalText] = useState('');
+  const [signalDate, setSignalDate] = useState<Date>(new Date());
   const [submitted, setSubmitted] = useState(false);
   const [assignedTag, setAssignedTag] = useState('');
   const [swappedIn, setSwappedIn] = useState<string | null>(null);
@@ -75,8 +80,8 @@ const Onboarding = () => {
 
   /** Submit the first signal and finalise the onboarding profile. */
   const submitSignal = async () => {
-    const signalDate = new Date().toISOString().split('T')[0];
-    if (isFutureDate(signalDate)) {
+    const dateStr = format(signalDate, 'yyyy-MM-dd');
+    if (isFutureDate(dateStr)) {
       toast({ variant: 'destructive', title: 'Invalid date', description: FUTURE_DATE_ERROR });
       return;
     }
@@ -84,7 +89,7 @@ const Onboarding = () => {
     try {
       const tag = await classifySignal(signalText);
       setAssignedTag(tag);
-      addSignal({ text: signalText, date: signalDate, tag, flagged: false });
+      addSignal({ text: signalText, date: dateStr, tag, flagged: false });
       setUser({ firstName, careerStage, goals, onboardingComplete: true });
       setSubmitted(true);
     } catch {
@@ -189,9 +194,36 @@ const Onboarding = () => {
       {!submitted ? (
         <>
           <h2 className="text-2xl font-serif text-navy mb-2">Log your first signal</h2>
-          <p className="text-sm text-muted-foreground mb-8">
+          <p className="text-sm text-muted-foreground mb-6">
             Something worth remembering from your last meeting or interaction.
           </p>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-foreground mb-1.5">Date</label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal rounded-xl",
+                    !signalDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {format(signalDate, 'PPP')}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={signalDate}
+                  onSelect={(d) => d && setSignalDate(d)}
+                  disabled={(date) => date > new Date()}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
           <div className="relative">
             <Textarea
               value={signalText}
