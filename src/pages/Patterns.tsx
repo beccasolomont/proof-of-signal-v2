@@ -133,7 +133,7 @@ const Patterns = () => {
             {/* Flagged Review — spans full width */}
             {flaggedSignals.length > 0 && (
               <div className="bg-card rounded-2xl border border-border p-6">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                   <div className="flex items-center gap-3">
                     <h2 className="text-lg font-serif text-navy">Flagged for review</h2>
                     <Button
@@ -168,17 +168,17 @@ const Patterns = () => {
                     const tip = tips[s.id];
                     return (
                       <div key={s.id} className="space-y-1.5">
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs text-muted-foreground w-20 flex-shrink-0">{s.date}</span>
-                          <p className="text-sm text-foreground line-clamp-1 flex-1">{s.text}</p>
-                          <Badge variant="secondary" className={`${getTagColorClass(s.tag)} text-navy border-0 text-xs flex-shrink-0`}>
-                            {s.tag}
-                          </Badge>
-                          <Select
-                            value={s.flagCategory || 'Watch closely'}
-                            onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
-                          >
-                            <SelectTrigger className="w-44 h-7 text-xs">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                           <span className="text-xs text-muted-foreground w-20 flex-shrink-0">{s.date}</span>
+                           <p className="text-sm text-foreground line-clamp-1 flex-1 min-w-0">{s.text}</p>
+                           <Badge variant="secondary" className={`${getTagColorClass(s.tag)} text-navy border-0 text-xs`}>
+                             {s.tag}
+                           </Badge>
+                           <Select
+                             value={s.flagCategory || 'Watch closely'}
+                             onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
+                           >
+                             <SelectTrigger className="w-44 max-w-full min-w-0 h-7 text-xs">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -190,7 +190,7 @@ const Patterns = () => {
                         </div>
                         {/* Coaching tip */}
                         {tip && tip !== '__error__' && (
-                          <div className="flex items-start gap-2 ml-[calc(5rem+0.75rem)]">
+                          <div className="flex items-start gap-2 ml-0 sm:ml-[calc(5rem+0.75rem)]">
                             <Lightbulb className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
                             {tip === '__loading__' ? (
                               <span className="text-xs text-muted-foreground italic">Generating coaching tip…</span>
