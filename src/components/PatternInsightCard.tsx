@@ -99,8 +99,13 @@ const PatternInsightCard = ({ tagCounts, onChecklistGenerated }: PatternInsightC
 
           {loading ? (
             <p className="text-sm text-muted-foreground italic">Analyzing all your signals…</p>
-          ) : insight ? (
-            <p className="text-sm text-muted-foreground italic">Analyzing all your signals…</p>
+          ) : error ? (
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">Insight generation failed. Try again.</p>
+              <Button variant="outline" size="sm" className="text-xs" onClick={() => setFetched(false)}>
+                Retry
+              </Button>
+            </div>
           ) : insight ? (
             <div className="flex flex-col flex-1">
               <p className="text-sm text-foreground leading-relaxed">{insight}</p>
