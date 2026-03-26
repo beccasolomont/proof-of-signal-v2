@@ -27,8 +27,8 @@ interface SignalRadarChartProps {
 const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) => {
   const maxCount = Math.max(...SIGNAL_TAGS.map(t => tagCounts[t] || 0), 1);
   const baseline = maxCount * 0.08;
-  const outerOpacity = Math.min(0.35 + (maxCount / Math.max(totalSignals, 1)) * 0.55, 0.9);
-  const innerOpacity = outerOpacity * 0.15;
+  const outerOpacity = Math.min(0.45 + (maxCount / Math.max(totalSignals, 1)) * 0.5, 0.95);
+  const innerOpacity = outerOpacity * 0.25;
 
   const data = SIGNAL_TAGS.map(tag => ({
     category: SHORT_LABELS[tag] || tag,
