@@ -124,9 +124,7 @@ function rowToSignal(row: {
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUserState] = useState<UserProfile>(defaultUser);
   const [signals, setSignals] = useState<Signal[]>([]);
-  const [customTags, setCustomTags] = useState<string[]>(() => {
-    try { return JSON.parse(localStorage.getItem('customSignalTags') || '[]'); } catch { return []; }
-  });
+  const [customTags, setCustomTags] = useState<string[]>(() => loadCustomTags());
   const [loading, setLoading] = useState(false);
   const [authUser, setAuthUser] = useState<User | null>(null);
 
