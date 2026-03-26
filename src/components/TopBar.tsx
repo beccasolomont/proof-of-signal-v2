@@ -8,7 +8,7 @@ const TopBar = () => (
       <img
         src="/images/logo.png"
         alt="Proof of Signal logo"
-        className="h-10 w-auto"
+        className="h-20 w-auto"
       />
     </div>
   </div>
