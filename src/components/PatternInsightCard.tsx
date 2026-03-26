@@ -82,7 +82,6 @@ const PatternInsightCard = ({ tagCounts, onChecklistGenerated }: PatternInsightC
         <div className="flex-1 flex flex-col min-h-0">
           <div className="flex items-center justify-between mb-1">
             <h3 className="text-sm font-semibold text-navy">What your signals suggest</h3>
-            {!isDemo && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -92,12 +91,11 @@ const PatternInsightCard = ({ tagCounts, onChecklistGenerated }: PatternInsightC
               >
                 <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
               </Button>
-            )}
           </div>
 
-          {isDemo ? (
-            <DemoInsight />
-          ) : loading ? (
+          {loading ? (
+            <p className="text-sm text-muted-foreground italic">Analyzing all your signals…</p>
+          ) : insight ? (
             <p className="text-sm text-muted-foreground italic">Analyzing all your signals…</p>
           ) : insight ? (
             <div className="flex flex-col flex-1">
