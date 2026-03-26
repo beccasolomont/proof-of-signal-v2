@@ -80,8 +80,8 @@ const Onboarding = () => {
 
   /** Submit the first signal and finalise the onboarding profile. */
   const submitSignal = async () => {
-    const signalDate = new Date().toISOString().split('T')[0];
-    if (isFutureDate(signalDate)) {
+    const dateStr = format(signalDate, 'yyyy-MM-dd');
+    if (isFutureDate(dateStr)) {
       toast({ variant: 'destructive', title: 'Invalid date', description: FUTURE_DATE_ERROR });
       return;
     }
@@ -89,7 +89,7 @@ const Onboarding = () => {
     try {
       const tag = await classifySignal(signalText);
       setAssignedTag(tag);
-      addSignal({ text: signalText, date: signalDate, tag, flagged: false });
+      addSignal({ text: signalText, date: dateStr, tag, flagged: false });
       setUser({ firstName, careerStage, goals, onboardingComplete: true });
       setSubmitted(true);
     } catch {
