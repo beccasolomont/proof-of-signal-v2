@@ -41,7 +41,7 @@ const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) =>
     const entry = data.find(d => d.category === payload.value);
     const color = entry ? LABEL_COLORS[entry.fullTag as SignalTag] : 'hsl(var(--muted-foreground))';
     return (
-      <text x={x} y={y} textAnchor="middle" dominantBaseline="central" fontSize={11} fontWeight={500} fill={color}>
+      <text x={x} y={y} textAnchor="middle" dominantBaseline="central" fontSize={12} fontWeight={600} fill={color}>
         {payload.value}
       </text>
     );
