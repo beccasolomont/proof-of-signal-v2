@@ -6,8 +6,7 @@
 import { useState } from 'react';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-
-import { useOnboardingRedirect } from '@/hooks/useOnboardingRedirect';
+import { useApp } from '@/contexts/AppContext';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
 import { Button } from '@/components/ui/button';
@@ -34,7 +33,15 @@ const Auth = () => {
   const [sent, setSent] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
-  const { redirectPath, checking } = useOnboardingRedirect(user, loading);
+  const { user: profile, loading: profileLoading } = useApp();
+
+  // Check for demo force-onboarding flag
+  const forceOnboarding = sessionStorage.getItem('demo_force_onboarding');
+  const redirectPath = (!loading && !profileLoading && user)
+    ? (forceOnboarding === 'true'
+      ? (() => { sessionStorage.removeItem('demo_force_onboarding'); return '/onboarding'; })()
+      : (profile.onboardingComplete ? '/dashboard' : '/onboarding'))
+    : null;
 
   // Notify returning users who landed on signup
   if (redirectPath === '/dashboard' && mode === 'signup') {
@@ -112,7 +119,7 @@ const Auth = () => {
     }
   };
 
-  if (loading || checking) {
+  if (loading || profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />

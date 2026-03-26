@@ -1,18 +1,18 @@
 /**
- * AuthRedirect — handles magic link returns on the root route.
- * If authenticated, checks onboarding status and redirects accordingly.
+ * AuthRedirect — handles magic link / OAuth returns on the root route.
+ * If authenticated, checks onboarding status via AppContext and redirects accordingly.
  * Otherwise renders children (landing page).
  */
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useOnboardingRedirect } from '@/hooks/useOnboardingRedirect';
+import { useApp } from '@/contexts/AppContext';
 import { Loader2 } from 'lucide-react';
 
 const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useAuth();
-  const { redirectPath, checking } = useOnboardingRedirect(user, loading);
+  const { user: authUser, loading: authLoading } = useAuth();
+  const { user: profile, loading: profileLoading } = useApp();
 
-  if (loading || checking) {
+  if (authLoading || profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -20,11 +20,18 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (redirectPath) {
-    return <Navigate to={redirectPath} replace />;
+  if (!authUser) {
+    return <>{children}</>;
   }
 
-  return <>{children}</>;
+  // Check for demo force-onboarding flag
+  const forceOnboarding = sessionStorage.getItem('demo_force_onboarding');
+  if (forceOnboarding === 'true') {
+    sessionStorage.removeItem('demo_force_onboarding');
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  return <Navigate to={profile.onboardingComplete ? '/dashboard' : '/onboarding'} replace />;
 };
 
 export default AuthRedirect;
