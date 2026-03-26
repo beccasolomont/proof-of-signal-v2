@@ -11,13 +11,14 @@ import { useApp, FLAG_CATEGORIES, FlagCategory } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import EmptyState from '@/components/illustrations/EmptyState';
-import DemoInsight from '@/components/DemoInsight';
 import { SIGNAL_TAGS } from '@/lib/signalTagger';
-import { TAG_DEFINITIONS, THEME_INSIGHTS, MIN_SIGNALS_FOR_INSIGHT, DEMO_USER_NAME, getTagColorClass } from '@/lib/constants';
+import { TAG_DEFINITIONS, MIN_SIGNALS_FOR_INSIGHT, getTagColorClass } from '@/lib/constants';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import SignalRadarChart from '@/components/SignalRadarChart';
 import SignalHeatmapCalendar from '@/components/SignalHeatmapCalendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import PatternInsightCard from '@/components/PatternInsightCard';
+import PatternChecklist from '@/components/PatternChecklist';
 
 
 const Patterns = () => {
@@ -25,6 +26,7 @@ const Patterns = () => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [isReclassifying, setIsReclassifying] = useState(false);
+  const [checklistItems, setChecklistItems] = useState<{ text: string; priority: 'high' | 'medium' | 'low' }[]>([]);
 
   const tagCounts = SIGNAL_TAGS.reduce((acc, tag) => {
     acc[tag] = signals.filter(s => s.tag === tag).length;
@@ -122,24 +124,12 @@ const Patterns = () => {
               </div>
 
               {/* Insight */}
-              <div className="bg-gradient-to-br from-rose-soft to-blush-light rounded-2xl p-6 border border-blush/20">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-navy flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-primary-foreground text-xs font-bold">✦</span>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-navy mb-1">What your signals suggest</h3>
-                    {user.firstName === DEMO_USER_NAME ? (
-                      <DemoInsight />
-                    ) : (
-                      <p className="text-sm text-foreground leading-relaxed">
-                        {THEME_INSIGHTS[topTags[0]?.[0]] || `Based on your ${totalSignals} signals, patterns are emerging.`}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <PatternInsightCard tagCounts={tagCounts} onChecklistGenerated={setChecklistItems} />
             </div>
+
+            {/* Row 3: Recommended next steps checklist */}
+            <PatternChecklist items={checklistItems} />
+
             {/* Flagged Review — spans full width */}
 
             {/* Flagged Review — spans full width */}
