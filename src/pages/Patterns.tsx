@@ -124,24 +124,12 @@ const Patterns = () => {
               </div>
 
               {/* Insight */}
-              <div className="bg-gradient-to-br from-rose-soft to-blush-light rounded-2xl p-6 border border-blush/20">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-navy flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-primary-foreground text-xs font-bold">✦</span>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-navy mb-1">What your signals suggest</h3>
-                    {user.firstName === DEMO_USER_NAME ? (
-                      <DemoInsight />
-                    ) : (
-                      <p className="text-sm text-foreground leading-relaxed">
-                        {THEME_INSIGHTS[topTags[0]?.[0]] || `Based on your ${totalSignals} signals, patterns are emerging.`}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <PatternInsightCard tagCounts={tagCounts} onChecklistGenerated={setChecklistItems} />
             </div>
+
+            {/* Row 3: Recommended next steps checklist */}
+            <PatternChecklist items={checklistItems} />
+
             {/* Flagged Review — spans full width */}
 
             {/* Flagged Review — spans full width */}
