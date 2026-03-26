@@ -146,7 +146,23 @@ const Patterns = () => {
             {flaggedSignals.length > 0 && (
               <div className="bg-card rounded-2xl border border-border p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-serif text-navy">Flagged for review</h2>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-lg font-serif text-navy">Flagged for review</h2>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs gap-1.5"
+                      disabled={isReclassifying}
+                      onClick={async () => {
+                        setIsReclassifying(true);
+                        await reclassifyFlaggedSignals();
+                        setIsReclassifying(false);
+                      }}
+                    >
+                      <RefreshCw className={`w-3 h-3 ${isReclassifying ? 'animate-spin' : ''}`} />
+                      {isReclassifying ? 'Re-classifying…' : 'Re-classify'}
+                    </Button>
+                  </div>
                   <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                     <SelectTrigger className="w-48 h-8 text-xs">
                       <SelectValue placeholder="Filter by category" />
