@@ -280,7 +280,7 @@ const Dashboard = () => {
             )}
 
             {/* Suggested Next Action CTA */}
-            {showInsight && user.firstName === DEMO_USER_NAME && (
+            {showInsight && signals.length > 0 && (
               <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border-2 border-amber-300 p-5 animate-fade-in shadow-sm">
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-full bg-amber-400 flex items-center justify-center flex-shrink-0 mt-0.5">
