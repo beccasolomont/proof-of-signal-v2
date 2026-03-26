@@ -31,6 +31,10 @@ export const isFutureDate = (dateStr: string): boolean => {
 /** Demo user first-name used to branch insight copy. */
 export const DEMO_USER_NAME = 'Diana';
 
+/** Demo account credentials (intentionally public — shared with judges). */
+export const DEMO_EMAIL = 'diana@demo.proofofsignal.com';
+export const DEMO_PASSWORD = 'DemoPass123!';
+
 /** Career stage options shown during onboarding and on the profile editor. */
 export const CAREER_STAGES = [
   'Aspiring PM',

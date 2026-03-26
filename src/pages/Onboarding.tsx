@@ -3,12 +3,14 @@
  *
  * Steps: Welcome → Name & Career Stage → Goals (max 2) → Signal Example → First Signal.
  * Profile data is only committed to storage on final signal submission.
+ * Pre-fills fields for the demo account (Diana).
  */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
+import { useAuth } from '@/hooks/useAuth';
 import { classifySignal } from '@/lib/signalTagger';
-import { MAX_SIGNAL_LENGTH, isFutureDate, FUTURE_DATE_ERROR } from '@/lib/constants';
+import { MAX_SIGNAL_LENGTH, isFutureDate, FUTURE_DATE_ERROR, DEMO_EMAIL } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -28,12 +30,17 @@ import { cn } from '@/lib/utils';
 const Onboarding = () => {
   const [step, setStep] = useState(0);
   const { user, setUser, addSignal } = useApp();
+  const { user: authUser } = useAuth();
   const navigate = useNavigate();
 
-  const [firstName, setFirstName] = useState('');
-  const [careerStage, setCareerStage] = useState(user.careerStage);
-  const [goals, setGoals] = useState<string[]>([]);
-  const [signalText, setSignalText] = useState('');
+  const isDemoAccount = authUser?.email === DEMO_EMAIL;
+
+  const [firstName, setFirstName] = useState(isDemoAccount ? 'Diana' : '');
+  const [careerStage, setCareerStage] = useState(isDemoAccount ? 'Senior PM' : user.careerStage);
+  const [goals, setGoals] = useState<string[]>(isDemoAccount ? ['Getting promoted', 'Building executive presence'] : []);
+  const [signalText, setSignalText] = useState(isDemoAccount
+    ? "Stakeholder review went well — CPO mentioned the roadmap framing by name in the all-hands recap. I didn't know she was going to reference it."
+    : '');
   const [signalDate, setSignalDate] = useState<Date>(new Date());
   const [submitted, setSubmitted] = useState(false);
   const [assignedTag, setAssignedTag] = useState('');
@@ -55,7 +62,6 @@ const Onboarding = () => {
     setGoals(prev => {
       if (prev.includes(g)) return prev.filter(x => x !== g);
       if (prev.length < 2) return [...prev, g];
-      // Replace least-recently-selected (first in array)
       const replaced = prev[0];
       const next = [prev[1], g];
       setSwappedOut(replaced);

@@ -2,10 +2,13 @@
  * Index — marketing landing page.
  * Presents the product value proposition, feature overview, social proof, and CTA.
  */
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '@/contexts/AppContext';
+import { supabase } from '@/integrations/supabase/client';
+import { DEMO_EMAIL, DEMO_PASSWORD } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import HeroIllustration from '@/components/illustrations/HeroIllustration';
 import FeatureIcon from '@/components/illustrations/FeatureIcons';
 import AvatarSilhouettes from '@/components/illustrations/AvatarSilhouettes';
@@ -44,7 +47,28 @@ const testimonials = [
 
 const Index = () => {
   const navigate = useNavigate();
-  const { resetToDemo } = useApp();
+  const { toast } = useToast();
+  const [demoLoading, setDemoLoading] = useState(false);
+
+  const handleSkipToDemo = async () => {
+    setDemoLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: DEMO_EMAIL,
+        password: DEMO_PASSWORD,
+      });
+      if (error) {
+        toast({ variant: 'destructive', title: 'Demo unavailable', description: error.message });
+      } else {
+        sessionStorage.setItem('demo_force_onboarding', 'true');
+        navigate('/onboarding');
+      }
+    } catch {
+      toast({ variant: 'destructive', title: 'Demo unavailable', description: 'Something went wrong.' });
+    } finally {
+      setDemoLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -80,12 +104,11 @@ const Index = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  onClick={() => {
-                    resetToDemo();
-                    navigate('/dashboard');
-                  }}
+                  onClick={handleSkipToDemo}
+                  disabled={demoLoading}
                   className="px-10 py-7 text-lg rounded-2xl border-primary/20 text-primary hover:bg-primary/5"
                 >
+                  {demoLoading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : null}
                   Skip to demo
                 </Button>
               </div>

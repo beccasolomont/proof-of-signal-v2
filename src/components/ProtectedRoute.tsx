@@ -1,15 +1,13 @@
 /**
- * ProtectedRoute — allows access if the user is authenticated OR in demo mode.
- * Redirects unauthenticated non-demo users to /auth.
+ * ProtectedRoute — allows access only if the user is authenticated.
+ * Redirects unauthenticated users to /auth.
  */
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useApp } from '@/contexts/AppContext';
 import { Loader2 } from 'lucide-react';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
-  const { isDemo } = useApp();
 
   if (loading) {
     return (
@@ -19,7 +17,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (!user && !isDemo) {
+  if (!user) {
     return <Navigate to="/auth" replace />;
   }
 
