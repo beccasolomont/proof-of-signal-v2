@@ -252,7 +252,7 @@ const Dashboard = () => {
               >
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-full bg-navy flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-primary-foreground text-xs font-bold">✦</span>
+                    <SignalIcon className="w-5 h-5 text-primary-foreground" />
                   </div>
                   <div>
                     <h3 className="text-sm font-semibold text-navy mb-1">Pattern detected</h3>
