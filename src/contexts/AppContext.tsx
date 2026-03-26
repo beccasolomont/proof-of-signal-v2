@@ -355,7 +355,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setUserState(defaultUser);
     setSignals([]);
     setCustomTags([]);
-    localStorage.removeItem('customSignalTags');
+    clearCustomTags();
   };
 
   /** Re-run AI flag category classification on all flagged signals. */
