@@ -73,7 +73,8 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
+      <TopBar />
       {/* Hero — full-bleed */}
       <section className="relative overflow-hidden">
         {/* Background image */}
