@@ -14,6 +14,7 @@ import {
   CONFIRMATION_TIMEOUT_MS,
   MIN_SIGNALS_FOR_INSIGHT,
   DEMO_USER_NAME,
+  DEMO_INSIGHT_ACTION,
   FUTURE_DATE_ERROR,
   isFutureDate,
 } from '@/lib/constants';
@@ -21,11 +22,12 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Lock, Filter, Tag, Plus, X } from 'lucide-react';
+import { CheckCircle2, Lock, Filter, Tag, Plus, X, ArrowRight } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/use-voice-input';
 import { useToast } from '@/hooks/use-toast';
 import VoiceInputButton from '@/components/VoiceInputButton';
 import DemoInsight from '@/components/DemoInsight';
+import SignalIcon from '@/components/illustrations/SignalIcon';
 import EmptyState from '@/components/illustrations/EmptyState';
 import SignalCard from '@/components/SignalCard';
 import { getTagColorClass } from '@/lib/constants';
@@ -250,7 +252,7 @@ const Dashboard = () => {
               >
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-full bg-navy flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-primary-foreground text-xs font-bold">✦</span>
+                    <SignalIcon className="w-5 h-5 text-primary-foreground" />
                   </div>
                   <div>
                     <h3 className="text-sm font-semibold text-navy mb-1">Pattern detected</h3>
@@ -266,6 +268,20 @@ const Dashboard = () => {
               </div>
             )}
 
+            {/* Suggested Next Action CTA */}
+            {showInsight && user.firstName === DEMO_USER_NAME && (
+              <div className="bg-card rounded-2xl border-2 border-navy/20 p-5 animate-fade-in">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <ArrowRight className="w-4 h-4 text-navy" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-navy mb-1">Suggested next action</h3>
+                    <p className="text-sm text-foreground leading-relaxed">{DEMO_INSIGHT_ACTION}</p>
+                  </div>
+                </div>
+              </div>
+            )}
             {/* Signal Timeline */}
             <div>
               <div className="flex items-center gap-3 mb-4 flex-wrap">
