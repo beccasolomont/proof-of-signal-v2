@@ -176,7 +176,7 @@ const Patterns = () => {
                               {s.tag}
                             </Badge>
                           </div>
-                          <div className="flex items-center gap-2 ml-20">
+                          <div className="w-full">
                             <Select
                               value={s.flagCategory || 'Watch closely'}
                               onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
