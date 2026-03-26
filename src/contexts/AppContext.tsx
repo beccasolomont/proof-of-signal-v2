@@ -7,6 +7,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { DEMO_EMAIL } from '@/lib/constants';
+import { getCustomTags as loadCustomTags, setCustomTags as saveCustomTags, clearCustomTags } from '@/lib/storage';
 import type { User } from '@supabase/supabase-js';
 
 /** Categories that can be assigned to flagged signals for review. */
