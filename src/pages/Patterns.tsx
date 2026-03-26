@@ -168,7 +168,7 @@ const Patterns = () => {
                     const tip = tips[s.id];
                     return (
                         <div key={s.id} className="space-y-1.5 overflow-hidden">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 overflow-hidden">
                           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                             <span className="text-xs text-muted-foreground w-20 flex-shrink-0">{s.date}</span>
                             <p className="text-sm text-foreground line-clamp-1 flex-1 min-w-0">{s.text}</p>
