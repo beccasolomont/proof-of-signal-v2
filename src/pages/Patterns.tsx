@@ -87,8 +87,15 @@ const Patterns = () => {
             description={`Log ${signalsNeeded} more signal${signalsNeeded > 1 ? 's' : ''} to unlock your first pattern insight.`}
           />
         ) : (
-          <div className="grid lg:grid-cols-3 gap-6">
-            {/* Tag Distribution */}
+          <div className="space-y-6">
+            {/* Row 1: Calendar (left) + Radar (right) */}
+            <div className="grid lg:grid-cols-2 gap-6">
+              <SignalHeatmapCalendar signals={signals} />
+              <SignalRadarChart tagCounts={tagCounts} totalSignals={totalSignals} />
+            </div>
+
+            {/* Row 2: Tag Distribution full width */}
+            <div className="grid lg:grid-cols-3 gap-6">
             <div className="bg-card rounded-2xl border border-border p-6">
               <h2 className="text-lg font-serif text-navy mb-4">Signal themes</h2>
               <div className="space-y-3">
@@ -110,12 +117,6 @@ const Patterns = () => {
                 ))}
               </div>
             </div>
-
-            {/* Radar Chart */}
-            <SignalRadarChart tagCounts={tagCounts} totalSignals={totalSignals} />
-
-            {/* Signal Calendar */}
-            <SignalHeatmapCalendar signals={signals} />
 
             {/* Insight — full width */}
             <div className="bg-gradient-to-br from-rose-soft to-blush-light rounded-2xl p-6 border border-blush/20 lg:col-span-3">

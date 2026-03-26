@@ -125,16 +125,16 @@ const SignalHeatmapCalendar = ({ signals }: SignalHeatmapCalendarProps) => {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-1.5 mt-2 justify-end">
-        <span className="text-[9px] text-muted-foreground">Less</span>
+      <div className="flex items-center gap-2 mt-4 justify-end">
+        <span className="text-xs text-muted-foreground">Less</span>
         {[0.15, 0.35, 0.55, 0.75, 0.9].map((op, i) => (
           <div
             key={i}
-            className="w-2.5 h-2.5 rounded-sm"
+            className="w-3 h-3 rounded-sm"
             style={{ backgroundColor: `hsl(var(--navy) / ${op})` }}
           />
         ))}
-        <span className="text-[9px] text-muted-foreground">More</span>
+        <span className="text-xs text-muted-foreground">More</span>
       </div>
 
       {/* Day detail dialog */}
