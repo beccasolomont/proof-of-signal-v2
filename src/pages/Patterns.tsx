@@ -5,7 +5,7 @@
  * clickable tag definitions, and a categorised flagged-signal review section.
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Lightbulb } from 'lucide-react';
+import { Lightbulb, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useApp, FLAG_CATEGORIES, FlagCategory } from '@/contexts/AppContext';
 import { Badge } from '@/components/ui/badge';
