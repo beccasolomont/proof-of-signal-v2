@@ -268,6 +268,20 @@ const Dashboard = () => {
               </div>
             )}
 
+            {/* Suggested Next Action CTA */}
+            {showInsight && user.firstName === DEMO_USER_NAME && (
+              <div className="bg-card rounded-2xl border-2 border-navy/20 p-5 animate-fade-in">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <ArrowRight className="w-4 h-4 text-navy" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-navy mb-1">Suggested next action</h3>
+                    <p className="text-sm text-foreground leading-relaxed">{DEMO_INSIGHT_ACTION}</p>
+                  </div>
+                </div>
+              </div>
+            )}
             {/* Signal Timeline */}
             <div>
               <div className="flex items-center gap-3 mb-4 flex-wrap">
