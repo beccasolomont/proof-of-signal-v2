@@ -19,7 +19,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { signOut } = useAuth();
 
-  if (pathname === '/' || pathname === '/auth' || pathname.startsWith('/onboarding')) return null;
+  if (pathname === '/' || pathname === '/auth' || pathname === '/privacy' || pathname.startsWith('/onboarding')) return null;
 
   const handleExit = async () => {
     await signOut();
