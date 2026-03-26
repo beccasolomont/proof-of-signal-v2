@@ -168,7 +168,7 @@ const Patterns = () => {
                     const tip = tips[s.id];
                     return (
                         <div key={s.id} className="space-y-1.5 overflow-hidden">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 overflow-hidden">
                           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                             <span className="text-xs text-muted-foreground w-20 flex-shrink-0">{s.date}</span>
                             <p className="text-sm text-foreground line-clamp-1 flex-1 min-w-0">{s.text}</p>
@@ -176,19 +176,21 @@ const Patterns = () => {
                               {s.tag}
                             </Badge>
                           </div>
-                          <Select
-                            value={s.flagCategory || 'Watch closely'}
-                            onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
-                          >
-                            <SelectTrigger className="w-full sm:w-44 h-7 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {FLAG_CATEGORIES.map(cat => (
-                                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <div className="w-full sm:w-auto">
+                            <Select
+                              value={s.flagCategory || 'Watch closely'}
+                              onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
+                            >
+                              <SelectTrigger className="w-full sm:w-44 h-7 text-xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {FLAG_CATEGORIES.map(cat => (
+                                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
                         {/* Coaching tip */}
                         {tip && tip !== '__error__' && (
