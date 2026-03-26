@@ -21,7 +21,6 @@ type AuthMethod = 'password' | 'magic-link';
 const Auth = () => {
   const { user, loading } = useAuth();
   const { toast } = useToast();
-  const { toast } = useToast();
   const [searchParams] = useSearchParams();
 
   const [mode, setMode] = useState<AuthMode>(
