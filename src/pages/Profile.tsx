@@ -1,13 +1,15 @@
 /**
  * Profile — user profile viewer/editor with demo reset (Diana only) and clean-account reset.
  */
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Edit2, RotateCcw, Trash2 } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Edit2, RotateCcw, Trash2, Camera } from 'lucide-react';
 import { MAX_GOALS } from '@/lib/constants';
 import CareerStageSelector from '@/components/CareerStageSelector';
 import GoalSelector from '@/components/GoalSelector';
@@ -22,6 +24,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import dianaAvatar from '@/assets/diana-avatar.png';
 
 const Profile = () => {
   const { user, signals, isDemoUser, setUser, resetToDemo, resetToClean } = useApp();
@@ -30,19 +33,27 @@ const Profile = () => {
   const [firstName, setFirstName] = useState(user.firstName);
   const [careerStage, setCareerStage] = useState(user.careerStage);
   const [goals, setGoals] = useState<string[]>(user.goals);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const save = () => {
-    setUser({ firstName, careerStage, goals });
-    setEditing(false);
+  const avatarSrc = isDemoUser ? dianaAvatar : user.avatarUrl || undefined;
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const ext = file.name.split('.').pop();
+      const path = `${session.user.id}/avatar.${ext}`;
+      await supabase.storage.from('avatars').upload(path, file, { upsert: true });
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path);
+      setUser({ avatarUrl: publicUrl });
+    } finally {
+      setUploading(false);
+    }
   };
-
-  const toggleGoal = (g: string) => {
-    setGoals(prev =>
-      prev.includes(g) ? prev.filter(x => x !== g) : prev.length < MAX_GOALS ? [...prev, g] : prev
-    );
-  };
-
-  const firstSignal = signals[signals.length - 1];
 
   return (
     <div className="min-h-screen bg-background">
