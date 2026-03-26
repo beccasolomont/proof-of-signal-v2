@@ -21,9 +21,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 
 const Patterns = () => {
-  const { signals, user, updateSignal } = useApp();
+  const { signals, user, updateSignal, reclassifyFlaggedSignals } = useApp();
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [isReclassifying, setIsReclassifying] = useState(false);
 
   const tagCounts = SIGNAL_TAGS.reduce((acc, tag) => {
     acc[tag] = signals.filter(s => s.tag === tag).length;
