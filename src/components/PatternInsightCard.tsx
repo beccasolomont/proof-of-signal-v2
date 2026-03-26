@@ -7,7 +7,6 @@ import { RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useApp } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
-import { Button } from '@/components/ui/button';
 
 interface PatternInsight {
   insight: string;
