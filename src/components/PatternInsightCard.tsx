@@ -30,9 +30,10 @@ const PatternInsightCard = ({ tagCounts, onChecklistGenerated }: PatternInsightC
   const fetchInsight = useCallback(async () => {
     if (signals.length === 0) return;
     setLoading(true);
+    setError(false);
     try {
       const flaggedSignals = signals.filter(s => s.flagged);
-      const { data, error } = await supabase.functions.invoke('generate-pattern-insight', {
+      const { data, error: fnError } = await supabase.functions.invoke('generate-pattern-insight', {
         body: {
           signals: signals.map(s => ({
             date: s.date,
@@ -52,13 +53,17 @@ const PatternInsightCard = ({ tagCounts, onChecklistGenerated }: PatternInsightC
         },
       });
 
-      if (!error && data) {
+      if (!fnError && data && !data.error) {
         if (data.insight) setInsight(data.insight);
         if (data.quote) setQuote(data.quote);
         if (data.checklist) onChecklistGenerated(data.checklist);
+      } else {
+        console.error('Pattern insight error:', fnError || data?.error);
+        setError(true);
       }
-    } catch {
-      // silently fail
+    } catch (e) {
+      console.error('Pattern insight fetch failed:', e);
+      setError(true);
     } finally {
       setLoading(false);
       setFetched(true);
