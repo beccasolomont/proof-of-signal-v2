@@ -387,25 +387,29 @@ const Dashboard = () => {
                   description={showFlaggedOnly || selectedTags.length > 0 ? 'Try adjusting your filters.' : 'Log your first signal above to start building your record.'}
                 />
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {groupedSignals.map(group => (
-                    <div key={group.label}>
-                      <div className="flex items-center gap-3 mb-3">
+                    <Collapsible key={group.label} defaultOpen>
+                      <CollapsibleTrigger className="flex items-center gap-3 w-full mb-3 group cursor-pointer">
                         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{group.label}</span>
                         <Separator className="flex-1" />
-                      </div>
-                      <div className="space-y-3">
-                        {group.signals.map(signal => (
-                          <SignalCard
-                            key={signal.id}
-                            signal={signal}
-                            onUpdate={updateSignal}
-                            onDelete={deleteSignal}
-                            onToggleFlag={toggleFlag}
-                          />
-                        ))}
-                      </div>
-                    </div>
+                        <span className="text-xs text-muted-foreground">{group.signals.length}</span>
+                        <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <div className="space-y-3">
+                          {group.signals.map(signal => (
+                            <SignalCard
+                              key={signal.id}
+                              signal={signal}
+                              onUpdate={updateSignal}
+                              onDelete={deleteSignal}
+                              onToggleFlag={toggleFlag}
+                            />
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
                   ))}
                 </div>
               )}
