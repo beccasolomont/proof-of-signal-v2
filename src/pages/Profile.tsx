@@ -46,12 +46,22 @@ const Profile = () => {
     setUploading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session) {
+        toast({ variant: 'destructive', title: 'Upload failed', description: 'You must be signed in to upload an avatar.' });
+        return;
+      }
       const ext = file.name.split('.').pop();
       const path = `${session.user.id}/avatar.${ext}`;
-      await supabase.storage.from('avatars').upload(path, file, { upsert: true });
+      const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
+      if (error) {
+        toast({ variant: 'destructive', title: 'Upload failed', description: error.message });
+        return;
+      }
       const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path);
       setUser({ avatarUrl: publicUrl });
+      toast({ title: 'Avatar updated' });
+    } catch (err) {
+      toast({ variant: 'destructive', title: 'Upload failed', description: 'Something went wrong. Please try again.' });
     } finally {
       setUploading(false);
     }

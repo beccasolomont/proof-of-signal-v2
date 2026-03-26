@@ -15,7 +15,7 @@ interface ChecklistItem {
 
 interface PatternInsightCardProps {
   tagCounts: Record<string, number>;
-  onChecklistGenerated: (checklist: PatternInsight['checklist']) => void;
+  onChecklistGenerated: (checklist: ChecklistItem[]) => void;
 }
 
 const PatternInsightCard = ({ tagCounts, onChecklistGenerated }: PatternInsightCardProps) => {
