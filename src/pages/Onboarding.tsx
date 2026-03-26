@@ -5,7 +5,7 @@
  * Profile data is only committed to storage on final signal submission.
  * Pre-fills fields for the demo account (Diana).
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { useAuth } from '@/hooks/useAuth';
