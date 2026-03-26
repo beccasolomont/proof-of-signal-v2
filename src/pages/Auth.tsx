@@ -20,7 +20,7 @@ type AuthMethod = 'password' | 'magic-link';
 
 const Auth = () => {
   const { user, loading } = useAuth();
-  const { isDemo } = useApp();
+  const { toast } = useToast();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
 
