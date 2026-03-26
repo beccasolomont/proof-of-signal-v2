@@ -23,9 +23,9 @@ export function useOnboardingRedirect(user: User | null, loading: boolean, skip 
       setChecking(true);
       try {
         // Check for demo force-onboarding flag
-        const forceOnboarding = sessionStorage.getItem('demo_force_onboarding');
+        const forceOnboarding = sessionStorage.getItem(DEMO_FORCE_ONBOARDING_KEY);
         if (forceOnboarding === 'true') {
-          sessionStorage.removeItem('demo_force_onboarding');
+          sessionStorage.removeItem(DEMO_FORCE_ONBOARDING_KEY);
           setRedirectPath('/onboarding');
           return;
         }

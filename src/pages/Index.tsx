@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { DEMO_EMAIL, DEMO_PASSWORD } from '@/lib/constants';
+import { DEMO_EMAIL, DEMO_PASSWORD, DEMO_FORCE_ONBOARDING_KEY } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -62,7 +62,7 @@ const Index = () => {
       if (error) {
         toast({ variant: 'destructive', title: 'Demo unavailable', description: error.message });
       } else {
-        sessionStorage.setItem('demo_force_onboarding', 'true');
+        sessionStorage.setItem(DEMO_FORCE_ONBOARDING_KEY, 'true');
         navigate('/onboarding');
       }
     } catch {
