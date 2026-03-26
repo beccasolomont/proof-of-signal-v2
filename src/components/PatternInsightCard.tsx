@@ -6,8 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useApp } from '@/contexts/AppContext';
-import { DEMO_USER_NAME } from '@/lib/constants';
-import DemoInsight from '@/components/DemoInsight';
+import { Button } from '@/components/ui/button';
 import { Button } from '@/components/ui/button';
 
 interface PatternInsight {
