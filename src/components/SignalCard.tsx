@@ -7,6 +7,7 @@
  * - `onDelete` — callback to remove the signal
  * - `onToggleFlag` — callback to toggle the flagged state
  */
+import { useState } from 'react';
 import { Signal, useApp } from '@/contexts/AppContext';
 import { SIGNAL_TAGS } from '@/lib/signalTagger';
 import { getTagColorClass, MAX_SIGNAL_LENGTH } from '@/lib/constants';
