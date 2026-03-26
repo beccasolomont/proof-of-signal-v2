@@ -125,7 +125,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUserState] = useState<UserProfile>(defaultUser);
   const [signals, setSignals] = useState<Signal[]>([]);
   const [customTags, setCustomTags] = useState<string[]>(() => loadCustomTags());
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [authUser, setAuthUser] = useState<User | null>(null);
 
   const isDemoUser = authUser?.email === DEMO_EMAIL;
