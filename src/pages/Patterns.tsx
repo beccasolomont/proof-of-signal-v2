@@ -169,7 +169,7 @@ const Patterns = () => {
                     return (
                         <div key={s.id} className="space-y-1.5 overflow-hidden">
                         <div className="flex flex-col gap-1.5">
-                          <div className="flex items-center gap-2 flex-wrap">
+                          <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground w-20 flex-shrink-0">{s.date}</span>
                             <p className="text-sm text-foreground line-clamp-1 flex-1 min-w-0">{s.text}</p>
                             <Badge variant="secondary" className={`${getTagColorClass(s.tag)} text-navy border-0 text-xs shrink-0 max-w-[160px] truncate`}>
