@@ -94,44 +94,47 @@ const Patterns = () => {
               <SignalRadarChart tagCounts={tagCounts} totalSignals={totalSignals} />
             </div>
 
-            {/* Signal themes */}
-            <div className="bg-card rounded-2xl border border-border p-6">
-              <h2 className="text-lg font-serif text-navy mb-4">Signal themes</h2>
-              <div className="space-y-3">
-                {topTags.map(([tag, count]) => (
-                  <div key={tag} className="flex items-center gap-3">
-                    <button onClick={() => setSelectedTag(tag)} className="focus:outline-none">
-                      <Badge variant="secondary" className={`${getTagColorClass(tag)} text-navy border-0 text-xs w-36 justify-center cursor-pointer hover:opacity-80 transition-all`}>
-                        {tag}
-                      </Badge>
-                    </button>
-                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-navy rounded-full transition-all"
-                        style={{ width: `${(count / totalSignals) * 100}%` }}
-                      />
+            {/* Row 2: Signal themes + Insight side by side */}
+            <div className="grid lg:grid-cols-2 gap-6">
+              {/* Signal themes */}
+              <div className="bg-card rounded-2xl border border-border p-6">
+                <h2 className="text-lg font-serif text-navy mb-4">Signal themes</h2>
+                <div className="space-y-3">
+                  {topTags.map(([tag, count]) => (
+                    <div key={tag} className="flex items-center gap-3">
+                      <button onClick={() => setSelectedTag(tag)} className="focus:outline-none">
+                        <Badge variant="secondary" className={`${getTagColorClass(tag)} text-navy border-0 text-xs w-36 justify-center cursor-pointer hover:opacity-80 transition-all`}>
+                          {tag}
+                        </Badge>
+                      </button>
+                      <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-navy rounded-full transition-all"
+                          style={{ width: `${(count / totalSignals) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-muted-foreground w-8 text-right">{count}</span>
                     </div>
-                    <span className="text-xs text-muted-foreground w-8 text-right">{count}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Insight — full width */}
-            <div className="bg-gradient-to-br from-rose-soft to-blush-light rounded-2xl p-6 border border-blush/20">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-navy flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-primary-foreground text-xs font-bold">✦</span>
+                  ))}
                 </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-navy mb-1">What your signals suggest</h3>
-                  {user.firstName === DEMO_USER_NAME ? (
-                    <DemoInsight />
-                  ) : (
-                    <p className="text-sm text-foreground leading-relaxed">
-                      {THEME_INSIGHTS[topTags[0]?.[0]] || `Based on your ${totalSignals} signals, patterns are emerging.`}
-                    </p>
-                  )}
+              </div>
+
+              {/* Insight */}
+              <div className="bg-gradient-to-br from-rose-soft to-blush-light rounded-2xl p-6 border border-blush/20">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-navy flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-primary-foreground text-xs font-bold">✦</span>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-navy mb-1">What your signals suggest</h3>
+                    {user.firstName === DEMO_USER_NAME ? (
+                      <DemoInsight />
+                    ) : (
+                      <p className="text-sm text-foreground leading-relaxed">
+                        {THEME_INSIGHTS[topTags[0]?.[0]] || `Based on your ${totalSignals} signals, patterns are emerging.`}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
