@@ -299,7 +299,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setCustomTags(prev => {
       if (prev.includes(tag)) return prev;
       const updated = [...prev, tag];
-      localStorage.setItem('customSignalTags', JSON.stringify(updated));
+      saveCustomTags(updated);
       return updated;
     });
   };
@@ -307,7 +307,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const removeCustomTag = (tag: string) => {
     setCustomTags(prev => {
       const updated = prev.filter(t => t !== tag);
-      localStorage.setItem('customSignalTags', JSON.stringify(updated));
+      saveCustomTags(updated);
       return updated;
     });
   };
