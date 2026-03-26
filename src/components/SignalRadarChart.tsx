@@ -11,12 +11,12 @@ const SHORT_LABELS: Record<string, string> = {
 };
 
 const LABEL_COLORS: Record<SignalTag, string> = {
-  'Recognition': 'hsl(340, 72%, 70%)',
-  'Missed Credit': 'hsl(25, 70%, 72%)',
-  'Constructive Feedback': 'hsl(200, 50%, 70%)',
-  'Manager Signal': 'hsl(260, 45%, 72%)',
-  'Org / Political Signal': 'hsl(170, 40%, 70%)',
-  'Personal Milestone': 'hsl(45, 65%, 70%)',
+  'Recognition': 'hsl(340, 72%, 45%)',
+  'Missed Credit': 'hsl(25, 70%, 45%)',
+  'Constructive Feedback': 'hsl(200, 55%, 40%)',
+  'Manager Signal': 'hsl(260, 50%, 45%)',
+  'Org / Political Signal': 'hsl(170, 45%, 38%)',
+  'Personal Milestone': 'hsl(45, 65%, 42%)',
 };
 
 interface SignalRadarChartProps {
