@@ -52,10 +52,10 @@ const SignalHeatmapCalendar = ({ signals }: SignalHeatmapCalendarProps) => {
   const selectedSignals = selectedDate ? (signalsByDate[selectedDate] || []) : [];
 
   return (
-    <div className="bg-card rounded-2xl border border-border p-4">
+    <div className="bg-card rounded-2xl border border-border p-6 h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-serif text-navy">Signal calendar</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-serif text-navy">Signal calendar</h2>
         <div className="flex items-center gap-1">
           <button
             onClick={() => setCurrentMonth(prev => subMonths(prev, 1))}
