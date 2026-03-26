@@ -13,6 +13,8 @@ import HeroIllustration from '@/components/illustrations/HeroIllustration';
 import FeatureIcon from '@/components/illustrations/FeatureIcons';
 import AvatarSilhouettes from '@/components/illustrations/AvatarSilhouettes';
 import SignalWavePattern from '@/components/illustrations/SignalWavePattern';
+import TopBar from '@/components/TopBar';
+import Footer from '@/components/Footer';
 
 const features = [
   {
