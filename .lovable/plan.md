@@ -1,37 +1,78 @@
 
 
-## Add Radar Chart to Patterns Page
+## Revised Plan: Email/Password Auth + Demo Account for Judges
 
-### What
-A radar/spider chart visualizing the six signal categories, where each axis length reflects frequency and fill color deepens with higher counts. Placed in the existing 2-column grid alongside the current "Signal themes" bar chart card.
+### Overview
+Add email/password authentication alongside existing Google OAuth and magic link. Create a pre-seeded Diana demo account. "Skip to demo" signs in with demo credentials and always navigates to the pre-filled onboarding flow (even if Diana's profile has `onboarding_complete = true`).
 
-### Layout Change
-The current 2-column grid has: (1) Signal themes bar chart, (2) Insight card. The radar chart will be added as a third card. New layout:
-- Row 1: Signal themes (left), Radar chart (right)
-- Row 2: Insight card (full width)
-- Row 3: Flagged review (full width, as before)
+### Changes
 
-### Implementation
+**1. Add `DEMO_EMAIL` and `DEMO_PASSWORD` constants**
+- File: `src/lib/constants.ts`
+- Add `DEMO_EMAIL = 'diana@demo.proofofsignal.com'` and `DEMO_PASSWORD = 'DemoPass123!'`
 
-**1. New component: `src/components/SignalRadarChart.tsx`**
-- Accepts `tagCounts: Record<string, number>` as a prop
-- Uses Recharts `RadarChart`, `PolarGrid`, `PolarAngleAxis`, `Radar` from the already-installed `recharts` package
-- Data: array of `{ category: string, count: number }` for all 6 `SIGNAL_TAGS` (including zeros)
-- Radar fill uses navy (`hsl(220, 58%, 28%)`) with opacity derived from max frequency — the higher the max count, the deeper/more opaque the fill (range 0.3–0.8)
-- Stroke in navy, grid lines in muted border color
-- Wrapped in `ChartContainer` from `src/components/ui/chart.tsx` for consistent styling
-- Compact, no external legend needed (axis labels serve as legend)
+**2. Add email/password fields to Auth page**
+- File: `src/pages/Auth.tsx`
+- Add a password `Input` below the email field
+- Signup: `supabase.auth.signUp({ email, password })`
+- Login: `supabase.auth.signInWithPassword({ email, password })`
+- Keep Google OAuth and magic link as alternatives
 
-**2. Update `src/pages/Patterns.tsx`**
-- Import `SignalRadarChart`
-- Pass the existing `tagCounts` object to the new component
-- Move the insight card to span full width (`lg:col-span-2`)
-- Radar chart takes the right column in row 1
+**3. Create seed edge function for demo user**
+- File: `supabase/functions/seed-demo-user/index.ts`
+- Uses service role key to call `supabase.auth.admin.createUser()` with Diana's email, password, and `email_confirm: true`
+- Inserts/updates Diana's profile (first_name, career_stage, goals, onboarding_complete = true)
+- Inserts the 5 demo signals
+- Idempotent — safe to run multiple times
+- Run once to seed, then can be removed
 
-### Technical Details
-- Recharts is already a project dependency (used by `chart.tsx`)
-- All 6 categories always shown on axes (even with 0 count) for consistent shape
-- Fill opacity calculated as: `0.3 + (maxCount / totalSignals) * 0.5`, clamped to 0.8
-- Category labels shortened for readability on small viewports (e.g., "Org / Political Signal" → "Org / Political")
-- No new dependencies needed
+**4. Update "Skip to demo" button (Index.tsx)**
+- Call `supabase.auth.signInWithPassword()` with `DEMO_EMAIL` / `DEMO_PASSWORD`
+- On success, navigate to `/onboarding` (not `/dashboard`) — always show the pre-filled onboarding flow
+- Store a sessionStorage flag `demo_force_onboarding = true` so the redirect logic knows to go to onboarding
+
+**5. Create onboarding exception for demo user**
+- File: `src/hooks/useOnboardingRedirect.ts`
+- After sign-in, if `sessionStorage.getItem('demo_force_onboarding')` is set, return `/onboarding` regardless of `onboarding_complete` status, then clear the flag
+- This means: "Skip to demo" → always onboarding; Diana signing in normally via Auth page → goes to dashboard if onboarding is complete
+
+**6. Pre-fill onboarding for demo user**
+- File: `src/pages/Onboarding.tsx`
+- When signed-in user email matches `DEMO_EMAIL`, pre-fill fields with Diana's data (name, career stage, goals, first signal text)
+- User can still walk through and modify steps
+
+**7. Remove in-memory demo mode from AppContext**
+- File: `src/contexts/AppContext.tsx`
+- Remove `isDemo`, `demoUser`, `demoSignals`, `resetToDemo` state and logic
+- Add computed `isDemoUser` check: compare auth user email to `DEMO_EMAIL`
+- Expose `isDemoUser` via context
+
+**8. Update ProtectedRoute**
+- File: `src/components/ProtectedRoute.tsx`
+- Remove `isDemo` bypass — Diana is a real authenticated user
+
+**9. Update AuthRedirect**
+- File: `src/components/AuthRedirect.tsx`
+- Remove `isDemo` reference
+
+**10. Update Profile page**
+- File: `src/pages/Profile.tsx`
+- Show "Reset to Diana's demo data" only when `isDemoUser` is true
+- Reset action: delete all Diana's signals, re-insert the 5 originals, reset profile fields
+
+**11. Update Dashboard**
+- File: `src/pages/Dashboard.tsx`
+- Remove any `isDemo` conditional logic
+
+**12. Database migration**
+- Insert Diana's 5 demo signals (will run after seed function creates the auth user)
+
+### Security
+- No unauthenticated endpoints — demo uses standard `signInWithPassword`
+- Demo credentials are intentionally public (shared with judges)
+- Standard RLS applies to demo user like any other user
+- No service role key exposed to clients
+
+### For Judges
+Share credentials: `diana@demo.proofofsignal.com` / `DemoPass123!` — or click "Skip to demo" on the landing page.
 
