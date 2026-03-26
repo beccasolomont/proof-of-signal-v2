@@ -176,19 +176,21 @@ const Patterns = () => {
                               {s.tag}
                             </Badge>
                           </div>
-                          <Select
-                            value={s.flagCategory || 'Watch closely'}
-                            onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
-                          >
-                            <SelectTrigger className="w-full sm:w-44 h-7 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {FLAG_CATEGORIES.map(cat => (
-                                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <div className="w-full sm:w-auto">
+                            <Select
+                              value={s.flagCategory || 'Watch closely'}
+                              onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
+                            >
+                              <SelectTrigger className="w-full sm:w-44 h-7 text-xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {FLAG_CATEGORIES.map(cat => (
+                                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
                         {/* Coaching tip */}
                         {tip && tip !== '__error__' && (
