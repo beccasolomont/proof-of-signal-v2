@@ -87,7 +87,7 @@ const SignalHeatmapCalendar = ({ signals }: SignalHeatmapCalendarProps) => {
       {/* Day cells */}
       <div className="grid grid-cols-7 gap-1 flex-1">
         {Array.from({ length: startDayOfWeek }).map((_, i) => (
-          <div key={`empty-${i}`} className="h-7" />
+          <div key={`empty-${i}`} className="h-9" />
         ))}
 
         {days.map(day => {
