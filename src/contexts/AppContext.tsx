@@ -70,6 +70,7 @@ const defaultUser: UserProfile = {
   careerStage: '',
   goals: [],
   onboardingComplete: false,
+  avatarUrl: '',
 };
 
 /** Demo signal data used for seeding and resetting. */
