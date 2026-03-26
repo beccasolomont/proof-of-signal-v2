@@ -149,6 +149,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           careerStage: profile.career_stage,
           goals: profile.goals || [],
           onboardingComplete: profile.onboarding_complete,
+          avatarUrl: (profile as any).avatar_url || '',
         });
       }
 
