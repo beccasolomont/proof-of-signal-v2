@@ -142,10 +142,18 @@ const Dashboard = () => {
       <div className="w-full px-8 md:px-16 lg:px-24 py-10 max-w-[1600px] mx-auto">
         {/* Header */}
         <div className="mb-10">
-          <h1 className="text-3xl font-serif text-navy mb-1">
-            {user.firstName ? (signals.length >= 2 ? `Welcome back, ${user.firstName}` : `Welcome, ${user.firstName}`) : 'Your Dashboard'}
-          </h1>
-          <p className="text-muted-foreground text-sm">Your signal record at a glance.</p>
+          <div className="flex items-center gap-3 mb-1">
+            <Avatar className="w-10 h-10">
+              <AvatarImage src={isDemoUser ? dianaAvatar : user.avatarUrl || undefined} alt={user.firstName} />
+              <AvatarFallback className="bg-rose-soft text-navy font-semibold text-sm">
+                {user.firstName ? user.firstName.charAt(0).toUpperCase() : '?'}
+              </AvatarFallback>
+            </Avatar>
+            <h1 className="text-3xl font-serif text-navy">
+              {user.firstName ? (signals.length >= 2 ? `Welcome back, ${user.firstName}` : `Welcome, ${user.firstName}`) : 'Your Dashboard'}
+            </h1>
+          </div>
+          <p className="text-muted-foreground text-sm ml-[52px]">Your signal record at a glance.</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
