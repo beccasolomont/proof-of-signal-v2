@@ -196,7 +196,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         career_stage: newUser.careerStage,
         goals: newUser.goals,
         onboarding_complete: newUser.onboardingComplete,
-      }).eq('id', authUser.id);
+        avatar_url: newUser.avatarUrl,
+      } as any).eq('id', authUser.id);
     }
   };
 
