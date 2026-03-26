@@ -6,8 +6,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useApp } from '@/contexts/AppContext';
-import { DEMO_USER_NAME } from '@/lib/constants';
-import DemoInsight from '@/components/DemoInsight';
 import { Button } from '@/components/ui/button';
 
 interface PatternInsight {
@@ -67,12 +65,11 @@ const PatternInsightCard = ({ tagCounts, onChecklistGenerated }: PatternInsightC
   }, [signals, tagCounts, user.careerStage, user.goals, onChecklistGenerated]);
 
   useEffect(() => {
-    if (!fetched && signals.length > 0 && user.firstName !== DEMO_USER_NAME) {
+    if (!fetched && signals.length > 0) {
       fetchInsight();
     }
-  }, [fetched, signals.length, user.firstName, fetchInsight]);
+  }, [fetched, signals.length, fetchInsight]);
 
-  const isDemo = user.firstName === DEMO_USER_NAME;
 
   return (
     <div className="bg-gradient-to-br from-rose-soft to-blush-light rounded-2xl p-6 border border-blush/20 flex flex-col h-full">
@@ -83,7 +80,6 @@ const PatternInsightCard = ({ tagCounts, onChecklistGenerated }: PatternInsightC
         <div className="flex-1 flex flex-col min-h-0">
           <div className="flex items-center justify-between mb-1">
             <h3 className="text-sm font-semibold text-navy">What your signals suggest</h3>
-            {!isDemo && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -93,12 +89,11 @@ const PatternInsightCard = ({ tagCounts, onChecklistGenerated }: PatternInsightC
               >
                 <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
               </Button>
-            )}
           </div>
 
-          {isDemo ? (
-            <DemoInsight />
-          ) : loading ? (
+          {loading ? (
+            <p className="text-sm text-muted-foreground italic">Analyzing all your signals…</p>
+          ) : insight ? (
             <p className="text-sm text-muted-foreground italic">Analyzing all your signals…</p>
           ) : insight ? (
             <div className="flex flex-col flex-1">
