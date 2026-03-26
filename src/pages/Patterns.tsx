@@ -5,9 +5,10 @@
  * clickable tag definitions, and a categorised flagged-signal review section.
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Lightbulb } from 'lucide-react';
+import { Lightbulb, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useApp, FLAG_CATEGORIES, FlagCategory } from '@/contexts/AppContext';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import EmptyState from '@/components/illustrations/EmptyState';
 import DemoInsight from '@/components/DemoInsight';
@@ -20,9 +21,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 
 const Patterns = () => {
-  const { signals, user, updateSignal } = useApp();
+  const { signals, user, updateSignal, reclassifyFlaggedSignals } = useApp();
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [isReclassifying, setIsReclassifying] = useState(false);
 
   const tagCounts = SIGNAL_TAGS.reduce((acc, tag) => {
     acc[tag] = signals.filter(s => s.tag === tag).length;
@@ -144,7 +146,23 @@ const Patterns = () => {
             {flaggedSignals.length > 0 && (
               <div className="bg-card rounded-2xl border border-border p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-serif text-navy">Flagged for review</h2>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-lg font-serif text-navy">Flagged for review</h2>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs gap-1.5"
+                      disabled={isReclassifying}
+                      onClick={async () => {
+                        setIsReclassifying(true);
+                        await reclassifyFlaggedSignals();
+                        setIsReclassifying(false);
+                      }}
+                    >
+                      <RefreshCw className={`w-3 h-3 ${isReclassifying ? 'animate-spin' : ''}`} />
+                      {isReclassifying ? 'Re-classifying…' : 'Re-classify'}
+                    </Button>
+                  </div>
                   <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                     <SelectTrigger className="w-48 h-8 text-xs">
                       <SelectValue placeholder="Filter by category" />
