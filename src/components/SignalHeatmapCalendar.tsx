@@ -76,16 +76,16 @@ const SignalHeatmapCalendar = ({ signals }: SignalHeatmapCalendarProps) => {
       </div>
 
       {/* Weekday headers */}
-      <div className="grid grid-cols-7 gap-0.5 mb-0.5">
+      <div className="grid grid-cols-7 gap-1 mb-1">
         {WEEKDAYS.map((d, i) => (
-          <div key={i} className="text-center text-[10px] text-muted-foreground font-medium py-0.5">
+          <div key={i} className="text-center text-xs text-muted-foreground font-medium py-1">
             {d}
           </div>
         ))}
       </div>
 
-      {/* Day cells — compact fixed height, no aspect-square */}
-      <div className="grid grid-cols-7 gap-0.5">
+      {/* Day cells */}
+      <div className="grid grid-cols-7 gap-1 flex-1">
         {Array.from({ length: startDayOfWeek }).map((_, i) => (
           <div key={`empty-${i}`} className="h-7" />
         ))}
