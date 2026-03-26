@@ -169,17 +169,20 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        setTimeout(() => loadUserData(session.user), 0);
+        loadUserData(session.user);
       } else {
         setAuthUser(null);
         setUserState(defaultUser);
         setSignals([]);
+        setLoading(false);
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         loadUserData(session.user);
+      } else {
+        setLoading(false);
       }
     });
 
