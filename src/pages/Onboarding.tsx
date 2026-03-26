@@ -42,7 +42,15 @@ const Onboarding = () => {
 
   // Pre-fill fields once auth user is resolved as the demo account
   const [demoPrefilled, setDemoPrefilled] = useState(false);
-  import { useEffect } from 'react'; // already imported at top — handled below
+  useEffect(() => {
+    if (isDemoAccount && !demoPrefilled) {
+      setFirstName('Diana');
+      setCareerStage('Senior PM');
+      setGoals(['Getting promoted', 'Building executive presence']);
+      setSignalText("Stakeholder review went well — CPO mentioned the roadmap framing by name in the all-hands recap. I didn't know she was going to reference it.");
+      setDemoPrefilled(true);
+    }
+  }, [isDemoAccount, demoPrefilled]);
   const [signalDate, setSignalDate] = useState<Date>(new Date());
   const [submitted, setSubmitted] = useState(false);
   const [assignedTag, setAssignedTag] = useState('');
