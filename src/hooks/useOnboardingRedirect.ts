@@ -7,8 +7,8 @@
  */
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { DEMO_FORCE_ONBOARDING_KEY } from '@/lib/constants';
 import type { User } from '@supabase/supabase-js';
-
 export function useOnboardingRedirect(user: User | null, loading: boolean, skip = false) {
   const [redirectPath, setRedirectPath] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
