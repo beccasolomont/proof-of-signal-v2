@@ -48,11 +48,11 @@ const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) =>
   };
 
   return (
-    <div className="bg-card rounded-2xl border border-border p-6">
-      <h2 className="text-lg font-serif text-navy mb-4">Signal radar</h2>
-      <div className="w-full flex items-center justify-center" style={{ height: 280 }}>
+    <div className="bg-card rounded-2xl border border-border p-6 h-full flex flex-col">
+      <h2 className="text-lg font-serif text-navy mb-2">Signal radar</h2>
+      <div className="w-full flex-1 flex items-center justify-center min-h-0">
         <ResponsiveContainer width="100%" height="100%">
-          <RadarChart data={data} cx="50%" cy="50%" outerRadius="70%">
+          <RadarChart data={data} cx="50%" cy="50%" outerRadius="80%">
             <defs>
               <radialGradient id="radarGradient" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stopColor="hsl(var(--navy))" stopOpacity={innerOpacity} />
