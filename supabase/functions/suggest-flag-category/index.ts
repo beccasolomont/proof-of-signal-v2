@@ -11,6 +11,7 @@ const VALID_CATEGORIES = [
   "Performance review",
   "Difficult conversation",
   "Watch closely",
+  "Growth area",
 ] as const;
 
 const SYSTEM_PROMPT = `You are a career signal analyst. Given a workplace signal and its category tag, suggest the most appropriate review subcategory using the suggest_flag_category tool.
