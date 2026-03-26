@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Edit2, RotateCcw, Trash2, Camera } from 'lucide-react';
 import { MAX_GOALS } from '@/lib/constants';
+import { useToast } from '@/hooks/use-toast';
 import CareerStageSelector from '@/components/CareerStageSelector';
 import GoalSelector from '@/components/GoalSelector';
 import {
