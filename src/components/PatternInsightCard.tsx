@@ -24,14 +24,16 @@ const PatternInsightCard = ({ tagCounts, onChecklistGenerated }: PatternInsightC
   const [insight, setInsight] = useState<string | null>(null);
   const [quote, setQuote] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [fetched, setFetched] = useState(false);
 
   const fetchInsight = useCallback(async () => {
     if (signals.length === 0) return;
     setLoading(true);
+    setError(false);
     try {
       const flaggedSignals = signals.filter(s => s.flagged);
-      const { data, error } = await supabase.functions.invoke('generate-pattern-insight', {
+      const { data, error: fnError } = await supabase.functions.invoke('generate-pattern-insight', {
         body: {
           signals: signals.map(s => ({
             date: s.date,
@@ -51,13 +53,17 @@ const PatternInsightCard = ({ tagCounts, onChecklistGenerated }: PatternInsightC
         },
       });
 
-      if (!error && data) {
+      if (!fnError && data && !data.error) {
         if (data.insight) setInsight(data.insight);
         if (data.quote) setQuote(data.quote);
         if (data.checklist) onChecklistGenerated(data.checklist);
+      } else {
+        console.error('Pattern insight error:', fnError || data?.error);
+        setError(true);
       }
-    } catch {
-      // silently fail
+    } catch (e) {
+      console.error('Pattern insight fetch failed:', e);
+      setError(true);
     } finally {
       setLoading(false);
       setFetched(true);
@@ -93,8 +99,13 @@ const PatternInsightCard = ({ tagCounts, onChecklistGenerated }: PatternInsightC
 
           {loading ? (
             <p className="text-sm text-muted-foreground italic">Analyzing all your signals…</p>
-          ) : insight ? (
-            <p className="text-sm text-muted-foreground italic">Analyzing all your signals…</p>
+          ) : error ? (
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">Insight generation failed. Try again.</p>
+              <Button variant="outline" size="sm" className="text-xs" onClick={() => setFetched(false)}>
+                Retry
+              </Button>
+            </div>
           ) : insight ? (
             <div className="flex flex-col flex-1">
               <p className="text-sm text-foreground leading-relaxed">{insight}</p>
