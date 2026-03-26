@@ -47,7 +47,7 @@ const Onboarding = () => {
       setFirstName('Diana');
       setCareerStage('Senior PM');
       setGoals(['Getting promoted', 'Building executive presence']);
-      setSignalText("Stakeholder review went well — CPO mentioned the roadmap framing by name in the all-hands recap. I didn't know she was going to reference it.");
+      setSignalText("CPO referenced my roadmap framing by name in the all-hands recap. I didn't know she was going to do that.");
       setDemoPrefilled(true);
     }
   }, [isDemoAccount, demoPrefilled]);
