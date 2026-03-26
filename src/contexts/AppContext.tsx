@@ -43,6 +43,7 @@ export interface UserProfile {
   careerStage: string;
   goals: string[];
   onboardingComplete: boolean;
+  avatarUrl: string;
 }
 
 interface AppState {
