@@ -359,10 +359,32 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('customSignalTags');
   };
 
+  /** Re-run AI flag category classification on all flagged signals. */
+  const reclassifyFlaggedSignals = useCallback(async () => {
+    const flagged = signals.filter(s => s.flagged);
+    const results = await Promise.allSettled(
+      flagged.map(async (s) => {
+        const category = await suggestFlagCategory(s.text, s.tag);
+        return { id: s.id, category };
+      })
+    );
+
+    for (const result of results) {
+      if (result.status === 'fulfilled') {
+        const { id, category } = result.value;
+        setSignals(prev => prev.map(s => s.id === id ? { ...s, flagCategory: category } : s));
+        if (authUser) {
+          await supabase.from('signals').update({ flag_category: category }).eq('id', id);
+        }
+      }
+    }
+  }, [signals, suggestFlagCategory, authUser]);
+
   return (
     <AppContext.Provider value={{
       user, signals, customTags, isDemo, isDemoUser, loading,
       setUser, addSignal, updateSignal, deleteSignal, toggleFlag,
+      reclassifyFlaggedSignals,
       addCustomTag, removeCustomTag,
       resetToDemo, resetToClean, loadUserData,
     }}>
