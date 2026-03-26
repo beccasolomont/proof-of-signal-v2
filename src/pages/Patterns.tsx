@@ -190,7 +190,7 @@ const Patterns = () => {
                         </div>
                         {/* Coaching tip */}
                         {tip && tip !== '__error__' && (
-                          <div className="flex items-start gap-2 ml-[calc(5rem+0.75rem)]">
+                          <div className="flex items-start gap-2 ml-0 sm:ml-[calc(5rem+0.75rem)]">
                             <Lightbulb className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
                             {tip === '__loading__' ? (
                               <span className="text-xs text-muted-foreground italic">Generating coaching tip…</span>
