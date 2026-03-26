@@ -26,6 +26,7 @@ import { useVoiceInput } from '@/hooks/use-voice-input';
 import { useToast } from '@/hooks/use-toast';
 import VoiceInputButton from '@/components/VoiceInputButton';
 import DemoInsight from '@/components/DemoInsight';
+import SignalIcon from '@/components/illustrations/SignalIcon';
 import EmptyState from '@/components/illustrations/EmptyState';
 import SignalCard from '@/components/SignalCard';
 import { getTagColorClass } from '@/lib/constants';
