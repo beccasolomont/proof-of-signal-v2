@@ -241,22 +241,49 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  /** Ask AI for a flag category suggestion; falls back to deterministic mapping. */
+  const suggestFlagCategory = useCallback(async (text: string, tag: string): Promise<FlagCategory> => {
+    try {
+      const { data, error } = await supabase.functions.invoke('suggest-flag-category', {
+        body: { text, tag },
+      });
+      if (!error && data?.category && FLAG_CATEGORIES.includes(data.category)) {
+        return data.category as FlagCategory;
+      }
+    } catch {
+      // fall through to deterministic
+    }
+    return TAG_TO_FLAG_CATEGORY[tag] || 'Watch closely';
+  }, []);
+
   const toggleFlag = async (id: string) => {
     const signal = signals.find(s => s.id === id);
     if (!signal) return;
     const newFlagged = !signal.flagged;
-    const autoCategory = newFlagged && !signal.flagCategory
-      ? TAG_TO_FLAG_CATEGORY[signal.tag] || 'Watch closely'
-      : undefined;
     const updates: Partial<Signal> = { flagged: newFlagged };
-    if (autoCategory) updates.flagCategory = autoCategory;
+
+    // Optimistic: set a temporary category, then replace with AI suggestion
+    if (newFlagged && !signal.flagCategory) {
+      const fallback = TAG_TO_FLAG_CATEGORY[signal.tag] || 'Watch closely';
+      updates.flagCategory = fallback;
+    }
 
     setSignals(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
 
     if (authUser) {
       const dbUpdates: Record<string, string | boolean> = { flagged: newFlagged };
-      if (autoCategory) dbUpdates.flag_category = autoCategory;
+      if (updates.flagCategory) dbUpdates.flag_category = updates.flagCategory;
       await supabase.from('signals').update(dbUpdates).eq('id', id);
+    }
+
+    // Fire AI suggestion in background and update if different
+    if (newFlagged) {
+      suggestFlagCategory(signal.text, signal.tag).then(async (aiCategory) => {
+        setSignals(prev => prev.map(s => s.id === id ? { ...s, flagCategory: aiCategory } : s));
+        if (authUser) {
+          await supabase.from('signals').update({ flag_category: aiCategory }).eq('id', id);
+        }
+      });
     }
   };
 
