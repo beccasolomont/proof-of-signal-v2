@@ -181,7 +181,7 @@ const Patterns = () => {
                               value={s.flagCategory || 'Watch closely'}
                               onValueChange={(val) => updateSignal(s.id, { flagCategory: val as FlagCategory })}
                             >
-                              <SelectTrigger className="w-full sm:w-44 h-7 text-xs">
+                              <SelectTrigger className="w-full h-7 text-xs">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
