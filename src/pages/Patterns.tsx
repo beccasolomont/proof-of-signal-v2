@@ -133,7 +133,7 @@ const Patterns = () => {
             {/* Flagged Review — spans full width */}
             {flaggedSignals.length > 0 && (
               <div className="bg-card rounded-2xl border border-border p-6">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                   <div className="flex items-center gap-3">
                     <h2 className="text-lg font-serif text-navy">Flagged for review</h2>
                     <Button
