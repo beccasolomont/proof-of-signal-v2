@@ -14,6 +14,7 @@ import {
   CONFIRMATION_TIMEOUT_MS,
   MIN_SIGNALS_FOR_INSIGHT,
   DEMO_USER_NAME,
+  DEMO_INSIGHT_ACTION,
   FUTURE_DATE_ERROR,
   isFutureDate,
 } from '@/lib/constants';
