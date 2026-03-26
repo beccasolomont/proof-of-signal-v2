@@ -5,7 +5,7 @@
  * Profile data is only committed to storage on final signal submission.
  * Pre-fills fields for the demo account (Diana).
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { useAuth } from '@/hooks/useAuth';
@@ -35,12 +35,22 @@ const Onboarding = () => {
 
   const isDemoAccount = authUser?.email === DEMO_EMAIL;
 
-  const [firstName, setFirstName] = useState(isDemoAccount ? 'Diana' : '');
-  const [careerStage, setCareerStage] = useState(isDemoAccount ? 'Senior PM' : user.careerStage);
-  const [goals, setGoals] = useState<string[]>(isDemoAccount ? ['Getting promoted', 'Building executive presence'] : []);
-  const [signalText, setSignalText] = useState(isDemoAccount
-    ? "Stakeholder review went well — CPO mentioned the roadmap framing by name in the all-hands recap. I didn't know she was going to reference it."
-    : '');
+  const [firstName, setFirstName] = useState('');
+  const [careerStage, setCareerStage] = useState(user.careerStage);
+  const [goals, setGoals] = useState<string[]>([]);
+  const [signalText, setSignalText] = useState('');
+
+  // Pre-fill fields once auth user is resolved as the demo account
+  const [demoPrefilled, setDemoPrefilled] = useState(false);
+  useEffect(() => {
+    if (isDemoAccount && !demoPrefilled) {
+      setFirstName('Diana');
+      setCareerStage('Senior PM');
+      setGoals(['Getting promoted', 'Building executive presence']);
+      setSignalText("Stakeholder review went well — CPO mentioned the roadmap framing by name in the all-hands recap. I didn't know she was going to reference it.");
+      setDemoPrefilled(true);
+    }
+  }, [isDemoAccount, demoPrefilled]);
   const [signalDate, setSignalDate] = useState<Date>(new Date());
   const [submitted, setSubmitted] = useState(false);
   const [assignedTag, setAssignedTag] = useState('');
