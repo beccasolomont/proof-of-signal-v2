@@ -7,11 +7,7 @@ import { RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useApp } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
-
-interface ChecklistItem {
-  text: string;
-  priority: 'high' | 'medium' | 'low';
-}
+import type { ChecklistItem } from '@/lib/constants';
 
 interface PatternInsightCardProps {
   tagCounts: Record<string, number>;

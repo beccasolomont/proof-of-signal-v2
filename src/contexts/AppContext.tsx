@@ -6,7 +6,7 @@
  */
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { DEMO_EMAIL } from '@/lib/constants';
+import { DEMO_EMAIL, DEFAULT_FLAG_CATEGORY } from '@/lib/constants';
 import { getCustomTags as loadCustomTags, setCustomTags as saveCustomTags, clearCustomTags } from '@/lib/storage';
 import type { User } from '@supabase/supabase-js';
 
@@ -51,7 +51,6 @@ interface AppState {
   user: UserProfile;
   signals: Signal[];
   customTags: string[];
-  isDemo: boolean;
   isDemoUser: boolean;
   loading: boolean;
   setUser: (user: Partial<UserProfile>) => void;
@@ -67,7 +66,7 @@ interface AppState {
   loadUserData: (authUser: User) => Promise<void>;
 }
 
-const defaultUser: UserProfile = {
+const DEFAULT_USER: UserProfile = {
   firstName: '',
   careerStage: '',
   goals: [],
@@ -122,15 +121,13 @@ function rowToSignal(row: {
 
 /** Provides global app state (user + signals) to the component tree. */
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUserState] = useState<UserProfile>(defaultUser);
+  const [user, setUserState] = useState<UserProfile>(DEFAULT_USER);
   const [signals, setSignals] = useState<Signal[]>([]);
   const [customTags, setCustomTags] = useState<string[]>(() => loadCustomTags());
   const [loading, setLoading] = useState(true);
   const [authUser, setAuthUser] = useState<User | null>(null);
 
   const isDemoUser = authUser?.email === DEMO_EMAIL;
-  // Keep isDemo for backward compat — same as isDemoUser
-  const isDemo = isDemoUser;
 
   /** Load profile + signals from Supabase for the authenticated user. */
   const loadUserData = useCallback(async (au: User) => {
@@ -149,7 +146,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           careerStage: profile.career_stage,
           goals: profile.goals || [],
           onboardingComplete: profile.onboarding_complete,
-          avatarUrl: (profile as any).avatar_url || '',
+          avatarUrl: profile.avatar_url || '',
         });
       }
 
@@ -172,7 +169,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         loadUserData(session.user);
       } else {
         setAuthUser(null);
-        setUserState(defaultUser);
+        setUserState(DEFAULT_USER);
         setSignals([]);
         setLoading(false);
       }
@@ -200,7 +197,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         goals: newUser.goals,
         onboarding_complete: newUser.onboardingComplete,
         avatar_url: newUser.avatarUrl,
-      } as any).eq('id', authUser.id);
+      }).eq('id', authUser.id);
     }
   };
 
@@ -256,7 +253,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     } catch {
       // fall through to deterministic
     }
-    return TAG_TO_FLAG_CATEGORY[tag] || 'Watch closely';
+    return TAG_TO_FLAG_CATEGORY[tag] || DEFAULT_FLAG_CATEGORY;
   }, []);
 
   const toggleFlag = async (id: string) => {
@@ -267,7 +264,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     // Optimistic: set a temporary category, then replace with AI suggestion
     if (newFlagged && !signal.flagCategory) {
-      const fallback = TAG_TO_FLAG_CATEGORY[signal.tag] || 'Watch closely';
+      const fallback = TAG_TO_FLAG_CATEGORY[signal.tag] || DEFAULT_FLAG_CATEGORY;
       updates.flagCategory = fallback;
     }
 
@@ -355,7 +352,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         onboarding_complete: false,
       }).eq('id', authUser.id);
     }
-    setUserState(defaultUser);
+    setUserState(DEFAULT_USER);
     setSignals([]);
     setCustomTags([]);
     clearCustomTags();
@@ -384,7 +381,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AppContext.Provider value={{
-      user, signals, customTags, isDemo, isDemoUser, loading,
+      user, signals, customTags, isDemoUser, loading,
       setUser, addSignal, updateSignal, deleteSignal, toggleFlag,
       reclassifyFlaggedSignals,
       addCustomTag, removeCustomTag,

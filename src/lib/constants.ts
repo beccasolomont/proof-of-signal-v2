@@ -35,6 +35,12 @@ export const DEMO_USER_NAME = 'Diana';
 export const DEMO_EMAIL = 'diana@demo.proofofsignal.com';
 export const DEMO_PASSWORD = 'DemoPass123!';
 
+/** SessionStorage key used to force onboarding for demo users. */
+export const DEMO_FORCE_ONBOARDING_KEY = 'demo_force_onboarding';
+
+/** Default flag category assigned when no AI suggestion is available. */
+export const DEFAULT_FLAG_CATEGORY = 'Watch closely';
+
 /** Career stage options shown during onboarding and on the profile editor. */
 export const CAREER_STAGES = [
   'Aspiring PM',
@@ -115,3 +121,9 @@ export const DEMO_INSIGHT_BODY =
   "A pattern is emerging: you're generating recognition at the senior level (CPO, VP Design) at the same time you're noticing credit gaps at the peer level. That's worth paying attention to — especially before a promotion conversation.";
 export const DEMO_INSIGHT_ACTION =
   "Suggested next action: Flag your top 3 recognition signals and bring them to your next 1:1. The question isn't whether you've done the work — it's whether your manager has seen it.";
+
+/** Checklist item shape used by PatternInsightCard and PatternChecklist. */
+export interface ChecklistItem {
+  text: string;
+  priority: 'high' | 'medium' | 'low';
+}
