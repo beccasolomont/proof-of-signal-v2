@@ -194,9 +194,36 @@ const Onboarding = () => {
       {!submitted ? (
         <>
           <h2 className="text-2xl font-serif text-navy mb-2">Log your first signal</h2>
-          <p className="text-sm text-muted-foreground mb-8">
+          <p className="text-sm text-muted-foreground mb-6">
             Something worth remembering from your last meeting or interaction.
           </p>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-foreground mb-1.5">Date</label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal rounded-xl",
+                    !signalDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {format(signalDate, 'PPP')}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={signalDate}
+                  onSelect={(d) => d && setSignalDate(d)}
+                  disabled={(date) => date > new Date()}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
           <div className="relative">
             <Textarea
               value={signalText}
