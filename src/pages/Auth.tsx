@@ -137,8 +137,7 @@ const Auth = () => {
           <img
             src="/images/logo.png"
             alt="Proof of Signal logo"
-            className="w-[200px] md:w-[200px] w-[160px] h-auto"
-            style={{ width: undefined }}
+            className="w-[160px] md:w-[200px] h-auto"
           />
         </div>
         <div className="text-center -mt-8">
