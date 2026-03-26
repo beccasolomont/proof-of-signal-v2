@@ -35,12 +35,14 @@ const Onboarding = () => {
 
   const isDemoAccount = authUser?.email === DEMO_EMAIL;
 
-  const [firstName, setFirstName] = useState(isDemoAccount ? 'Diana' : '');
-  const [careerStage, setCareerStage] = useState(isDemoAccount ? 'Senior PM' : user.careerStage);
-  const [goals, setGoals] = useState<string[]>(isDemoAccount ? ['Getting promoted', 'Building executive presence'] : []);
-  const [signalText, setSignalText] = useState(isDemoAccount
-    ? "Stakeholder review went well — CPO mentioned the roadmap framing by name in the all-hands recap. I didn't know she was going to reference it."
-    : '');
+  const [firstName, setFirstName] = useState('');
+  const [careerStage, setCareerStage] = useState(user.careerStage);
+  const [goals, setGoals] = useState<string[]>([]);
+  const [signalText, setSignalText] = useState('');
+
+  // Pre-fill fields once auth user is resolved as the demo account
+  const [demoPrefilled, setDemoPrefilled] = useState(false);
+  import { useEffect } from 'react'; // already imported at top — handled below
   const [signalDate, setSignalDate] = useState<Date>(new Date());
   const [submitted, setSubmitted] = useState(false);
   const [assignedTag, setAssignedTag] = useState('');
