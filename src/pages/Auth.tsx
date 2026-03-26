@@ -119,7 +119,7 @@ const Auth = () => {
     }
   };
 
-  if (loading || checking) {
+  if (loading || profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
