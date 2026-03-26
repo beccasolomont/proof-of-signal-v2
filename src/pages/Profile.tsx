@@ -55,11 +55,49 @@ const Profile = () => {
     }
   };
 
+  const save = () => {
+    setUser({ firstName, careerStage, goals });
+    setEditing(false);
+  };
+
+  const toggleGoal = (g: string) => {
+    setGoals(prev =>
+      prev.includes(g) ? prev.filter(x => x !== g) : prev.length < MAX_GOALS ? [...prev, g] : prev
+    );
+  };
+
+  const firstSignal = signals[signals.length - 1];
+
   return (
     <div className="min-h-screen bg-background">
       <div className="w-full px-8 md:px-16 lg:px-24 py-10 max-w-[1600px] mx-auto">
+        {/* Avatar + Header */}
         <div className="flex items-center justify-between mb-10">
-          <h1 className="text-3xl font-serif text-navy">Your Profile</h1>
+          <div className="flex items-center gap-4">
+            <div className="relative group">
+              <Avatar className="w-16 h-16">
+                <AvatarImage src={avatarSrc} alt={user.firstName} />
+                <AvatarFallback className="bg-rose-soft text-navy font-semibold text-lg">
+                  {user.firstName ? user.firstName.charAt(0).toUpperCase() : '?'}
+                </AvatarFallback>
+              </Avatar>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <Camera className="w-5 h-5 text-white" />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                className="hidden"
+              />
+            </div>
+            <h1 className="text-3xl font-serif text-navy">Your Profile</h1>
+          </div>
           {!editing && (
             <Button variant="ghost" onClick={() => setEditing(true)} className="text-muted-foreground">
               <Edit2 className="w-4 h-4 mr-1" /> Edit
