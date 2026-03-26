@@ -9,7 +9,7 @@ const Footer = () => (
       <img
         src="/images/logo.png"
         alt="Proof of Signal logo"
-        className="h-8 w-auto"
+        className="h-24 w-auto"
       />
       <div className="flex items-center gap-6 text-sm text-muted-foreground">
         <span>© Proof of Signal 2026</span>
