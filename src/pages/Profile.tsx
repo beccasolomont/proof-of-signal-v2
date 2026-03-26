@@ -29,6 +29,7 @@ import dianaAvatar from '@/assets/diana-avatar.png';
 
 const Profile = () => {
   const { user, signals, isDemoUser, setUser, resetToDemo, resetToClean } = useApp();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
   const [firstName, setFirstName] = useState(user.firstName);
