@@ -133,8 +133,14 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
       <div className="w-full max-w-sm space-y-8 animate-fade-in">
-        <div className="text-center">
-          <p className="text-sm font-bold tracking-[0.25em] uppercase text-accent mb-3">Proof of Signal</p>
+        <div className="flex flex-col items-center pt-10 mb-8">
+          <img
+            src="/images/logo.png"
+            alt="Proof of Signal logo"
+            className="w-[160px] md:w-[200px] h-auto"
+          />
+        </div>
+        <div className="text-center -mt-8">
           <h1 className="text-3xl font-serif text-primary mb-2">
             {isSignup ? 'Create your account' : 'Welcome back'}
           </h1>
