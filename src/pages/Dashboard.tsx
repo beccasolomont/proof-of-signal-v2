@@ -39,7 +39,7 @@ import dianaAvatar from '@/assets/diana-avatar.png';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, signals, customTags, addSignal, updateSignal, deleteSignal, toggleFlag, addCustomTag, removeCustomTag } = useApp();
+  const { user, signals, customTags, addSignal, updateSignal, deleteSignal, toggleFlag, addCustomTag, removeCustomTag, isDemoUser } = useApp();
   const { toast } = useToast();
   const [text, setText] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
