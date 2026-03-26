@@ -59,7 +59,7 @@ const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) =>
                 <stop offset="100%" stopColor="hsl(var(--navy))" stopOpacity={outerOpacity} />
               </radialGradient>
             </defs>
-            <PolarGrid stroke="hsl(var(--border))" />
+            <PolarGrid stroke="hsl(var(--border))" strokeWidth={1.5} />
             <PolarRadiusAxis domain={[0, maxCount + baseline]} tick={false} axisLine={false} />
             <PolarAngleAxis dataKey="category" tick={renderTick} />
             <Radar
