@@ -1,12 +1,12 @@
 /**
  * AppContext — global application state provider.
  *
- * Dual-mode storage:
- *  - Demo mode: in-memory only (no DB writes), Diana's preset data
- *  - Authenticated mode: reads/writes to Supabase profiles + signals tables
+ * All data is persisted to the database via Supabase.
+ * Demo mode is determined by whether the authenticated user's email matches DEMO_EMAIL.
  */
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { DEMO_EMAIL } from '@/lib/constants';
 import type { User } from '@supabase/supabase-js';
 
 /** Categories that can be assigned to flagged signals for review. */
@@ -50,6 +50,7 @@ interface AppState {
   signals: Signal[];
   customTags: string[];
   isDemo: boolean;
+  isDemoUser: boolean;
   loading: boolean;
   setUser: (user: Partial<UserProfile>) => void;
   addSignal: (signal: Omit<Signal, 'id'>) => void;
@@ -58,8 +59,8 @@ interface AppState {
   toggleFlag: (id: string) => void;
   addCustomTag: (tag: string) => void;
   removeCustomTag: (tag: string) => void;
-  resetToDemo: () => void;
-  resetToClean: () => void;
+  resetToDemo: () => Promise<void>;
+  resetToClean: () => Promise<void>;
   loadUserData: (authUser: User) => Promise<void>;
 }
 
@@ -70,45 +71,34 @@ const defaultUser: UserProfile = {
   onboardingComplete: false,
 };
 
-const demoUser: UserProfile = {
-  firstName: 'Diana',
-  careerStage: 'Senior PM (4–10 years)',
-  goals: ['Getting promoted', 'Building executive presence'],
-  onboardingComplete: true,
-};
-
-const demoSignals: Signal[] = [
+/** Demo signal data used for seeding and resetting. */
+const DEMO_SIGNALS_DATA = [
   {
-    id: 'demo-1',
-    text: 'Stakeholder review went well — CPO mentioned the roadmap framing by name in the all-hands recap. I didn\'t know she was going to reference it.',
+    text: "Stakeholder review went well — CPO mentioned the roadmap framing by name in the all-hands recap. I didn't know she was going to reference it.",
     date: '2025-03-18',
     tag: 'Recognition',
     flagged: true,
   },
   {
-    id: 'demo-2',
-    text: 'Felt like my idea about the discovery sprint structure got picked up in the PM sync without attribution. Not sure if I\'m reading into it.',
+    text: "Felt like my idea about the discovery sprint structure got picked up in the PM sync without attribution. Not sure if I'm reading into it.",
     date: '2025-03-19',
     tag: 'Missed Credit',
     flagged: true,
   },
   {
-    id: 'demo-3',
-    text: '1:1 with my manager was shorter than usual. He moved through the agenda fast and didn\'t ask follow-up questions. Not sure what to make of it.',
+    text: "1:1 with my manager was shorter than usual. He moved through the agenda fast and didn't ask follow-up questions. Not sure what to make of it.",
     date: '2025-03-20',
     tag: 'Manager Signal',
     flagged: false,
   },
   {
-    id: 'demo-4',
     text: 'Led my first cross-functional roadmap review with design + eng + data. It ran long but nobody left. That felt like something.',
     date: '2025-03-21',
     tag: 'Personal Milestone',
     flagged: true,
   },
   {
-    id: 'demo-5',
-    text: 'Got feedback in writing from the VP of Design that my framing of the Q2 priorities was \'unusually clear for this stage of planning.\' Saved the email.',
+    text: "Got feedback in writing from the VP of Design that my framing of the Q2 priorities was 'unusually clear for this stage of planning.' Saved the email.",
     date: '2025-03-22',
     tag: 'Recognition',
     flagged: true,
@@ -148,17 +138,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [customTags, setCustomTags] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem('customSignalTags') || '[]'); } catch { return []; }
   });
-  const [isDemo, setIsDemo] = useState(false);
   const [loading, setLoading] = useState(false);
   const [authUser, setAuthUser] = useState<User | null>(null);
+
+  const isDemoUser = authUser?.email === DEMO_EMAIL;
+  // Keep isDemo for backward compat — same as isDemoUser
+  const isDemo = isDemoUser;
 
   /** Load profile + signals from Supabase for the authenticated user. */
   const loadUserData = useCallback(async (au: User) => {
     setAuthUser(au);
-    setIsDemo(false);
     setLoading(true);
     try {
-      // Load profile
       const { data: profile } = await supabase
         .from('profiles')
         .select('*')
@@ -174,7 +165,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         });
       }
 
-      // Load signals
       const { data: sigs } = await supabase
         .from('signals')
         .select('*')
@@ -191,14 +181,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        // Use setTimeout to avoid potential Supabase deadlock
         setTimeout(() => loadUserData(session.user), 0);
       } else {
         setAuthUser(null);
-        if (!isDemo) {
-          setUserState(defaultUser);
-          setSignals([]);
-        }
+        setUserState(defaultUser);
+        setSignals([]);
       }
     });
 
@@ -215,7 +202,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const newUser = { ...user, ...updates };
     setUserState(newUser);
 
-    if (authUser && !isDemo) {
+    if (authUser) {
       await supabase.from('profiles').update({
         first_name: newUser.firstName,
         career_stage: newUser.careerStage,
@@ -226,7 +213,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addSignal = async (signal: Omit<Signal, 'id'>) => {
-    if (authUser && !isDemo) {
+    if (authUser) {
       const { data, error } = await supabase.from('signals').insert({
         user_id: authUser.id,
         text: signal.text,
@@ -250,7 +237,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const updateSignal = async (id: string, updates: Partial<Signal>) => {
     setSignals(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
 
-    if (authUser && !isDemo) {
+    if (authUser) {
       const dbUpdates: Record<string, string | boolean | null> = {};
       if (updates.text !== undefined) dbUpdates.text = updates.text;
       if (updates.date !== undefined) dbUpdates.date = updates.date;
@@ -269,7 +256,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const signal = signals.find(s => s.id === id);
     if (!signal) return;
     const newFlagged = !signal.flagged;
-    // Auto-assign category from tag mapping when flagging
     const autoCategory = newFlagged && !signal.flagCategory
       ? TAG_TO_FLAG_CATEGORY[signal.tag] || 'Watch closely'
       : undefined;
@@ -278,7 +264,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     setSignals(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
 
-    if (authUser && !isDemo) {
+    if (authUser) {
       const dbUpdates: Record<string, string | boolean> = { flagged: newFlagged };
       if (autoCategory) dbUpdates.flag_category = autoCategory;
       await supabase.from('signals').update(dbUpdates).eq('id', id);
@@ -288,7 +274,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const deleteSignal = async (id: string) => {
     setSignals(prev => prev.filter(s => s.id !== id));
 
-    if (authUser && !isDemo) {
+    if (authUser) {
       await supabase.from('signals').delete().eq('id', id);
     }
   };
@@ -310,16 +296,38 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  /** Load the built-in Diana demo dataset (in-memory only). */
-  const resetToDemo = () => {
-    setIsDemo(true);
-    setUserState(demoUser);
-    setSignals(demoSignals);
+  /** Reset Diana's demo account to original seed data. */
+  const resetToDemo = async () => {
+    if (!authUser || !isDemoUser) return;
+
+    // Delete all signals
+    await supabase.from('signals').delete().eq('user_id', authUser.id);
+
+    // Reset profile
+    await supabase.from('profiles').update({
+      first_name: 'Diana',
+      career_stage: 'Senior PM',
+      goals: ['Getting promoted', 'Building executive presence'],
+      onboarding_complete: true,
+    }).eq('id', authUser.id);
+
+    // Re-insert demo signals
+    const inserts = DEMO_SIGNALS_DATA.map(s => ({
+      user_id: authUser.id,
+      text: s.text,
+      date: s.date,
+      tag: s.tag,
+      flagged: s.flagged,
+    }));
+    await supabase.from('signals').insert(inserts);
+
+    // Reload
+    await loadUserData(authUser);
   };
 
   /** Wipe all data and return to a fresh state. */
   const resetToClean = async () => {
-    if (authUser && !isDemo) {
+    if (authUser) {
       await supabase.from('signals').delete().neq('id', '00000000-0000-0000-0000-000000000000');
       await supabase.from('profiles').update({
         first_name: '',
@@ -328,7 +336,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         onboarding_complete: false,
       }).eq('id', authUser.id);
     }
-    setIsDemo(false);
     setUserState(defaultUser);
     setSignals([]);
     setCustomTags([]);
@@ -337,7 +344,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AppContext.Provider value={{
-      user, signals, customTags, isDemo, loading,
+      user, signals, customTags, isDemo, isDemoUser, loading,
       setUser, addSignal, updateSignal, deleteSignal, toggleFlag,
       addCustomTag, removeCustomTag,
       resetToDemo, resetToClean, loadUserData,

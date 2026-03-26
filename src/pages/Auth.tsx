@@ -1,31 +1,35 @@
 /**
  * Auth — dual-mode page supporting Create Account (signup) and Sign In (login).
+ * Supports Google OAuth, magic link, and email/password authentication.
  * Redirects authenticated users based on onboarding status.
  */
 import { useState } from 'react';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useApp } from '@/contexts/AppContext';
+
 import { useOnboardingRedirect } from '@/hooks/useOnboardingRedirect';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowRight, Mail, Loader2 } from 'lucide-react';
+import { ArrowRight, Mail, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 type AuthMode = 'signup' | 'login';
+type AuthMethod = 'password' | 'magic-link';
 
 const Auth = () => {
   const { user, loading } = useAuth();
-  const { isDemo } = useApp();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
 
   const [mode, setMode] = useState<AuthMode>(
     searchParams.get('mode') === 'login' ? 'login' : 'signup'
   );
+  const [method, setMethod] = useState<AuthMethod>('password');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -57,6 +61,34 @@ const Auth = () => {
       toast({ variant: 'destructive', title: 'Sign-in failed', description: 'Something went wrong.' });
     } finally {
       setGoogleLoading(false);
+    }
+  };
+
+  const handleEmailPassword = async () => {
+    if (!email.trim() || !password.trim()) return;
+    setSending(true);
+    try {
+      if (mode === 'signup') {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: window.location.origin },
+        });
+        if (error) {
+          toast({ variant: 'destructive', title: 'Signup failed', description: error.message });
+        } else {
+          toast({ title: 'Check your email', description: 'We sent you a confirmation link.' });
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          toast({ variant: 'destructive', title: 'Sign-in failed', description: error.message });
+        }
+      }
+    } catch {
+      toast({ variant: 'destructive', title: 'Error', description: 'Something went wrong.' });
+    } finally {
+      setSending(false);
     }
   };
 
@@ -131,8 +163,28 @@ const Auth = () => {
           <div className="h-px flex-1 bg-border" />
         </div>
 
-        {/* Magic Link */}
-        {sent ? (
+        {/* Method toggle */}
+        <div className="flex justify-center gap-1 bg-muted rounded-lg p-1">
+          <button
+            onClick={() => setMethod('password')}
+            className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${
+              method === 'password' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'
+            }`}
+          >
+            Password
+          </button>
+          <button
+            onClick={() => setMethod('magic-link')}
+            className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${
+              method === 'magic-link' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'
+            }`}
+          >
+            Magic link
+          </button>
+        </div>
+
+        {/* Magic Link — sent state */}
+        {method === 'magic-link' && sent ? (
           <div className="text-center py-4 animate-fade-in">
             <Mail className="w-8 h-8 text-accent mx-auto mb-3" />
             <p className="font-serif text-primary text-lg mb-1">Check your email</p>
@@ -151,15 +203,37 @@ const Auth = () => {
               onChange={e => setEmail(e.target.value)}
               placeholder="you@company.com"
               className="rounded-xl py-6"
-              onKeyDown={e => e.key === 'Enter' && handleMagicLink()}
+              onKeyDown={e => e.key === 'Enter' && (method === 'password' ? handleEmailPassword() : handleMagicLink())}
             />
+            {method === 'password' && (
+              <div className="relative">
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Password"
+                  className="rounded-xl py-6 pr-10"
+                  onKeyDown={e => e.key === 'Enter' && handleEmailPassword()}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            )}
             <Button
-              onClick={handleMagicLink}
-              disabled={!email.trim() || sending}
+              onClick={method === 'password' ? handleEmailPassword : handleMagicLink}
+              disabled={!email.trim() || (method === 'password' && !password.trim()) || sending}
               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 rounded-xl text-base"
             >
               {sending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-              Send magic link <ArrowRight className="ml-2 w-4 h-4" />
+              {method === 'password'
+                ? (isSignup ? 'Create account' : 'Sign in')
+                : 'Send magic link'}
+              <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </div>
         )}

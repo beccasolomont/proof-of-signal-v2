@@ -1,5 +1,5 @@
 /**
- * Profile — user profile viewer/editor with demo reset and clean-account reset.
+ * Profile — user profile viewer/editor with demo reset (Diana only) and clean-account reset.
  */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 const Profile = () => {
-  const { user, signals, setUser, resetToDemo, resetToClean } = useApp();
+  const { user, signals, isDemoUser, setUser, resetToDemo, resetToClean } = useApp();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
   const [firstName, setFirstName] = useState(user.firstName);
@@ -111,49 +111,53 @@ const Profile = () => {
           </div>
         )}
 
-        {/* Demo Reset */}
-        <div className="border border-dashed border-border rounded-2xl p-6 text-center space-y-3">
-          <p className="text-sm text-muted-foreground mb-3">Team demo tool</p>
-          <Button
-            variant="outline"
-            onClick={resetToDemo}
-            className="rounded-xl text-muted-foreground hover:text-navy"
-          >
-            <RotateCcw className="w-4 h-4 mr-2" /> Reset to Diana's demo data
-          </Button>
-          <div>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-xs text-muted-foreground hover:text-destructive"
-                >
-                  <Trash2 className="w-3 h-3 mr-1" /> Reset to clean account
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Reset to clean account</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This will clear all your signals and settings. Are you sure?
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => {
-                      resetToClean();
-                      navigate('/onboarding');
-                    }}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  >
-                    Confirm
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+        {/* Demo Reset — only for Diana's demo account */}
+        {isDemoUser && (
+          <div className="border border-dashed border-border rounded-2xl p-6 text-center space-y-3 mb-8">
+            <p className="text-sm text-muted-foreground mb-3">Demo account tools</p>
+            <Button
+              variant="outline"
+              onClick={resetToDemo}
+              className="rounded-xl text-muted-foreground hover:text-navy"
+            >
+              <RotateCcw className="w-4 h-4 mr-2" /> Reset to Diana's demo data
+            </Button>
           </div>
+        )}
+
+        {/* Clean Reset */}
+        <div className="border border-dashed border-border rounded-2xl p-6 text-center">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs text-muted-foreground hover:text-destructive"
+              >
+                <Trash2 className="w-3 h-3 mr-1" /> Reset to clean account
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Reset to clean account</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will clear all your signals and settings. Are you sure?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    resetToClean();
+                    navigate('/onboarding');
+                  }}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Confirm
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </div>

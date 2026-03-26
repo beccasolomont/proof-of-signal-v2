@@ -5,14 +5,12 @@
  */
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useApp } from '@/contexts/AppContext';
 import { useOnboardingRedirect } from '@/hooks/useOnboardingRedirect';
 import { Loader2 } from 'lucide-react';
 
 const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
-  const { isDemo } = useApp();
-  const { redirectPath, checking } = useOnboardingRedirect(user, loading, isDemo);
+  const { redirectPath, checking } = useOnboardingRedirect(user, loading);
 
   if (loading || checking) {
     return (

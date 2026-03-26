@@ -1,12 +1,11 @@
 /**
  * Navbar — top navigation bar.
  * Hidden on the landing page, auth page, and during onboarding.
- * Shows Dashboard, Profile, Patterns links + Sign out / Exit demo.
+ * Shows Dashboard, Profile, Patterns links + Sign out.
  */
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, User, TrendingUp, LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { useApp } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
 
 const navItems = [
@@ -19,17 +18,12 @@ const Navbar = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { signOut } = useAuth();
-  const { isDemo } = useApp();
 
   if (pathname === '/' || pathname === '/auth' || pathname.startsWith('/onboarding')) return null;
 
   const handleExit = async () => {
-    if (isDemo) {
-      navigate('/');
-    } else {
-      await signOut();
-      navigate('/');
-    }
+    await signOut();
+    navigate('/');
   };
 
   return (
@@ -63,7 +57,7 @@ const Navbar = () => {
               className="ml-2 text-xs text-muted-foreground hover:text-foreground"
             >
               <LogOut className="w-3.5 h-3.5 mr-1" />
-              <span className="hidden sm:inline">{isDemo ? 'Exit demo' : 'Sign out'}</span>
+              <span className="hidden sm:inline">Sign out</span>
             </Button>
           </div>
         </div>
