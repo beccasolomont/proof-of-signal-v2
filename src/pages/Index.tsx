@@ -85,7 +85,7 @@ const Index = () => {
         {/* White overlay fading toward bottom */}
         <div className="absolute inset-0 bg-background/[0.78]" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-background" />
-        <div className="relative w-full px-[100px] pt-20 pb-24 lg:pt-32 lg:pb-40">
+        <div className="relative w-full px-6 sm:px-12 md:px-[100px] pt-20 pb-24 lg:pt-32 lg:pb-40">
           <div className="grid lg:grid-cols-2 gap-16 items-center max-w-[1600px] mx-auto">
             <div className="animate-fade-in">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif text-primary leading-[1.1] mb-8">
