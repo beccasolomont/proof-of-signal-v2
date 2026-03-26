@@ -337,7 +337,7 @@ const Dashboard = () => {
                       onSubmit={e => {
                         e.preventDefault();
                         const trimmed = customTagInput.trim();
-                        if (trimmed && !SIGNAL_TAGS.includes(trimmed as any) && !customTags.includes(trimmed)) {
+                        if (trimmed && !(SIGNAL_TAGS as readonly string[]).includes(trimmed) && !customTags.includes(trimmed)) {
                           addCustomTag(trimmed);
                           setCustomTagInput('');
                         }
