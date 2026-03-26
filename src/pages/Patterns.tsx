@@ -4,7 +4,7 @@
  * Displays signal theme distribution, contextual insight copy based on dominant theme,
  * clickable tag definitions, and a categorised flagged-signal review section.
  */
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Lightbulb, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useApp, FLAG_CATEGORIES, FlagCategory } from '@/contexts/AppContext';
