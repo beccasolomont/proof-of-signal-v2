@@ -11,12 +11,12 @@ const SHORT_LABELS: Record<string, string> = {
 };
 
 const LABEL_COLORS: Record<SignalTag, string> = {
-  'Recognition': 'hsl(340, 72%, 70%)',
-  'Missed Credit': 'hsl(25, 70%, 72%)',
-  'Constructive Feedback': 'hsl(200, 50%, 70%)',
-  'Manager Signal': 'hsl(260, 45%, 72%)',
-  'Org / Political Signal': 'hsl(170, 40%, 70%)',
-  'Personal Milestone': 'hsl(45, 65%, 70%)',
+  'Recognition': 'hsl(340, 72%, 45%)',
+  'Missed Credit': 'hsl(25, 70%, 45%)',
+  'Constructive Feedback': 'hsl(200, 55%, 40%)',
+  'Manager Signal': 'hsl(260, 50%, 45%)',
+  'Org / Political Signal': 'hsl(170, 45%, 38%)',
+  'Personal Milestone': 'hsl(45, 65%, 42%)',
 };
 
 interface SignalRadarChartProps {
@@ -27,8 +27,8 @@ interface SignalRadarChartProps {
 const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) => {
   const maxCount = Math.max(...SIGNAL_TAGS.map(t => tagCounts[t] || 0), 1);
   const baseline = maxCount * 0.08;
-  const outerOpacity = Math.min(0.35 + (maxCount / Math.max(totalSignals, 1)) * 0.55, 0.9);
-  const innerOpacity = outerOpacity * 0.15;
+  const outerOpacity = Math.min(0.45 + (maxCount / Math.max(totalSignals, 1)) * 0.5, 0.95);
+  const innerOpacity = outerOpacity * 0.25;
 
   const data = SIGNAL_TAGS.map(tag => ({
     category: SHORT_LABELS[tag] || tag,
@@ -41,7 +41,7 @@ const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) =>
     const entry = data.find(d => d.category === payload.value);
     const color = entry ? LABEL_COLORS[entry.fullTag as SignalTag] : 'hsl(var(--muted-foreground))';
     return (
-      <text x={x} y={y} textAnchor="middle" dominantBaseline="central" fontSize={11} fontWeight={500} fill={color}>
+      <text x={x} y={y} textAnchor="middle" dominantBaseline="central" fontSize={12} fontWeight={600} fill={color}>
         {payload.value}
       </text>
     );
@@ -59,7 +59,7 @@ const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) =>
                 <stop offset="100%" stopColor="hsl(var(--navy))" stopOpacity={outerOpacity} />
               </radialGradient>
             </defs>
-            <PolarGrid stroke="hsl(var(--border))" />
+            <PolarGrid stroke="hsl(var(--border))" strokeWidth={1.5} />
             <PolarRadiusAxis domain={[0, maxCount + baseline]} tick={false} axisLine={false} />
             <PolarAngleAxis dataKey="category" tick={renderTick} />
             <Radar
@@ -67,7 +67,7 @@ const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) =>
               dataKey="value"
               stroke="hsl(var(--navy))"
               fill="url(#radarGradient)"
-              strokeWidth={2}
+              strokeWidth={2.5}
             />
           </RadarChart>
         </ResponsiveContainer>
