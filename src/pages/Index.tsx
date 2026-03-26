@@ -13,6 +13,8 @@ import HeroIllustration from '@/components/illustrations/HeroIllustration';
 import FeatureIcon from '@/components/illustrations/FeatureIcons';
 import AvatarSilhouettes from '@/components/illustrations/AvatarSilhouettes';
 import SignalWavePattern from '@/components/illustrations/SignalWavePattern';
+import TopBar from '@/components/TopBar';
+import Footer from '@/components/Footer';
 
 const features = [
   {
@@ -71,7 +73,8 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
+      <TopBar />
       {/* Hero — full-bleed */}
       <section className="relative overflow-hidden">
         {/* Background image */}
@@ -85,7 +88,6 @@ const Index = () => {
         <div className="relative w-full px-[100px] pt-20 pb-24 lg:pt-32 lg:pb-40">
           <div className="grid lg:grid-cols-2 gap-16 items-center max-w-[1600px] mx-auto">
             <div className="animate-fade-in">
-              <p className="text-sm font-bold tracking-[0.25em] uppercase text-accent mb-5">Proof of Signal</p>
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif text-primary leading-[1.1] mb-8">
                 Your career,<br />on record.
               </h1>
@@ -199,6 +201,8 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };
