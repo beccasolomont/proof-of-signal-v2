@@ -92,13 +92,16 @@ const Patterns = () => {
           />
         ) : (
           <div className="space-y-6">
-            {/* Row 1: Calendar (left) + Radar (right) */}
+            {/* Row 1: What your signals suggest — full width */}
+            <PatternInsightCard tagCounts={tagCounts} onChecklistGenerated={setChecklistItems} />
+
+            {/* Row 2: Calendar (left) + Radar (right) */}
             <div className="grid lg:grid-cols-2 gap-6">
               <SignalHeatmapCalendar signals={signals} />
               <SignalRadarChart tagCounts={tagCounts} totalSignals={totalSignals} />
             </div>
 
-            {/* Row 2: Signal themes + Insight side by side */}
+            {/* Row 3: Signal themes (left) + Recommended steps (right) */}
             <div className="grid lg:grid-cols-2 gap-6">
               {/* Signal themes */}
               <div className="bg-card rounded-2xl border border-border p-6">
@@ -123,12 +126,9 @@ const Patterns = () => {
                 </div>
               </div>
 
-              {/* Insight */}
-              <PatternInsightCard tagCounts={tagCounts} onChecklistGenerated={setChecklistItems} />
+              {/* Recommended next steps */}
+              <PatternChecklist items={checklistItems.slice(0, 4)} />
             </div>
-
-            {/* Row 3: Recommended next steps checklist */}
-            <PatternChecklist items={checklistItems} />
 
             {/* Flagged Review — spans full width */}
 
