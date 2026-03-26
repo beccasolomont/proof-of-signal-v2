@@ -94,8 +94,7 @@ const Patterns = () => {
               <SignalRadarChart tagCounts={tagCounts} totalSignals={totalSignals} />
             </div>
 
-            {/* Row 2: Tag Distribution full width */}
-            <div className="grid lg:grid-cols-3 gap-6">
+            {/* Signal themes */}
             <div className="bg-card rounded-2xl border border-border p-6">
               <h2 className="text-lg font-serif text-navy mb-4">Signal themes</h2>
               <div className="space-y-3">
