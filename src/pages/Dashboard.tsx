@@ -17,6 +17,7 @@ import {
   DEMO_INSIGHT_ACTION,
   FUTURE_DATE_ERROR,
   isFutureDate,
+  getTagColorClass,
 } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -30,7 +31,6 @@ import DemoInsight from '@/components/DemoInsight';
 import SignalIcon from '@/components/illustrations/SignalIcon';
 import EmptyState from '@/components/illustrations/EmptyState';
 import SignalCard from '@/components/SignalCard';
-import { getTagColorClass } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';

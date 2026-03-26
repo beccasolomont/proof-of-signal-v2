@@ -118,7 +118,7 @@ const SignalCard = ({ signal, onUpdate, onDelete, onToggleFlag }: SignalCardProp
           <div className="space-y-4">
             <Textarea
               value={editText}
-              onChange={e => setEditText(e.target.value.slice(0, 500))}
+              onChange={e => setEditText(e.target.value.slice(0, MAX_SIGNAL_LENGTH))}
               className="rounded-xl min-h-[100px]"
             />
             <div className="flex items-center gap-3">
