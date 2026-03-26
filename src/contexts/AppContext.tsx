@@ -43,6 +43,7 @@ export interface UserProfile {
   careerStage: string;
   goals: string[];
   onboardingComplete: boolean;
+  avatarUrl: string;
 }
 
 interface AppState {
@@ -69,6 +70,7 @@ const defaultUser: UserProfile = {
   careerStage: '',
   goals: [],
   onboardingComplete: false,
+  avatarUrl: '',
 };
 
 /** Demo signal data used for seeding and resetting. */
@@ -147,6 +149,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           careerStage: profile.career_stage,
           goals: profile.goals || [],
           onboardingComplete: profile.onboarding_complete,
+          avatarUrl: (profile as any).avatar_url || '',
         });
       }
 
@@ -193,7 +196,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         career_stage: newUser.careerStage,
         goals: newUser.goals,
         onboarding_complete: newUser.onboardingComplete,
-      }).eq('id', authUser.id);
+        avatar_url: newUser.avatarUrl,
+      } as any).eq('id', authUser.id);
     }
   };
 

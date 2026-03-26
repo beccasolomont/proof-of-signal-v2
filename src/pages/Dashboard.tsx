@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Lock, Filter, Tag, Plus, X, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Lock, Filter, Tag, Plus, X, ArrowRight, ChevronDown } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/use-voice-input';
 import { useToast } from '@/hooks/use-toast';
 import VoiceInputButton from '@/components/VoiceInputButton';
@@ -32,11 +32,14 @@ import EmptyState from '@/components/illustrations/EmptyState';
 import SignalCard from '@/components/SignalCard';
 import { getTagColorClass } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { format, parseISO } from 'date-fns';
+import dianaAvatar from '@/assets/diana-avatar.png';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, signals, customTags, addSignal, updateSignal, deleteSignal, toggleFlag, addCustomTag, removeCustomTag } = useApp();
+  const { user, signals, customTags, addSignal, updateSignal, deleteSignal, toggleFlag, addCustomTag, removeCustomTag, isDemoUser } = useApp();
   const { toast } = useToast();
   const [text, setText] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -139,10 +142,18 @@ const Dashboard = () => {
       <div className="w-full px-8 md:px-16 lg:px-24 py-10 max-w-[1600px] mx-auto">
         {/* Header */}
         <div className="mb-10">
-          <h1 className="text-3xl font-serif text-navy mb-1">
-            {user.firstName ? (signals.length >= 2 ? `Welcome back, ${user.firstName}` : `Welcome, ${user.firstName}`) : 'Your Dashboard'}
-          </h1>
-          <p className="text-muted-foreground text-sm">Your signal record at a glance.</p>
+          <div className="flex items-center gap-3 mb-1">
+            <Avatar className="w-10 h-10">
+              <AvatarImage src={isDemoUser ? dianaAvatar : user.avatarUrl || undefined} alt={user.firstName} />
+              <AvatarFallback className="bg-rose-soft text-navy font-semibold text-sm">
+                {user.firstName ? user.firstName.charAt(0).toUpperCase() : '?'}
+              </AvatarFallback>
+            </Avatar>
+            <h1 className="text-3xl font-serif text-navy">
+              {user.firstName ? (signals.length >= 2 ? `Welcome back, ${user.firstName}` : `Welcome, ${user.firstName}`) : 'Your Dashboard'}
+            </h1>
+          </div>
+          <p className="text-muted-foreground text-sm ml-[52px]">Your signal record at a glance.</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -270,14 +281,14 @@ const Dashboard = () => {
 
             {/* Suggested Next Action CTA */}
             {showInsight && user.firstName === DEMO_USER_NAME && (
-              <div className="bg-card rounded-2xl border-2 border-navy/20 p-5 animate-fade-in">
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border-2 border-amber-300 p-5 animate-fade-in shadow-sm">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <ArrowRight className="w-4 h-4 text-navy" />
+                  <div className="w-8 h-8 rounded-full bg-amber-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <ArrowRight className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-navy mb-1">Suggested next action</h3>
-                    <p className="text-sm text-foreground leading-relaxed">{DEMO_INSIGHT_ACTION}</p>
+                    <h3 className="text-sm font-semibold text-amber-900 mb-1">Suggested next action</h3>
+                    <p className="text-sm text-amber-800 leading-relaxed">{DEMO_INSIGHT_ACTION}</p>
                   </div>
                 </div>
               </div>
@@ -376,25 +387,29 @@ const Dashboard = () => {
                   description={showFlaggedOnly || selectedTags.length > 0 ? 'Try adjusting your filters.' : 'Log your first signal above to start building your record.'}
                 />
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {groupedSignals.map(group => (
-                    <div key={group.label}>
-                      <div className="flex items-center gap-3 mb-3">
+                    <Collapsible key={group.label} defaultOpen>
+                      <CollapsibleTrigger className="flex items-center gap-3 w-full mb-3 group cursor-pointer">
                         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{group.label}</span>
                         <Separator className="flex-1" />
-                      </div>
-                      <div className="space-y-3">
-                        {group.signals.map(signal => (
-                          <SignalCard
-                            key={signal.id}
-                            signal={signal}
-                            onUpdate={updateSignal}
-                            onDelete={deleteSignal}
-                            onToggleFlag={toggleFlag}
-                          />
-                        ))}
-                      </div>
-                    </div>
+                        <span className="text-xs text-muted-foreground">{group.signals.length}</span>
+                        <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <div className="space-y-3">
+                          {group.signals.map(signal => (
+                            <SignalCard
+                              key={signal.id}
+                              signal={signal}
+                              onUpdate={updateSignal}
+                              onDelete={deleteSignal}
+                              onToggleFlag={toggleFlag}
+                            />
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
                   ))}
                 </div>
               )}

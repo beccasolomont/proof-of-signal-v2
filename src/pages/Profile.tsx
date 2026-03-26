@@ -1,13 +1,15 @@
 /**
  * Profile — user profile viewer/editor with demo reset (Diana only) and clean-account reset.
  */
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Edit2, RotateCcw, Trash2 } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Edit2, RotateCcw, Trash2, Camera } from 'lucide-react';
 import { MAX_GOALS } from '@/lib/constants';
 import CareerStageSelector from '@/components/CareerStageSelector';
 import GoalSelector from '@/components/GoalSelector';
@@ -22,6 +24,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import dianaAvatar from '@/assets/diana-avatar.png';
 
 const Profile = () => {
   const { user, signals, isDemoUser, setUser, resetToDemo, resetToClean } = useApp();
@@ -30,6 +33,27 @@ const Profile = () => {
   const [firstName, setFirstName] = useState(user.firstName);
   const [careerStage, setCareerStage] = useState(user.careerStage);
   const [goals, setGoals] = useState<string[]>(user.goals);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const avatarSrc = isDemoUser ? dianaAvatar : user.avatarUrl || undefined;
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const ext = file.name.split('.').pop();
+      const path = `${session.user.id}/avatar.${ext}`;
+      await supabase.storage.from('avatars').upload(path, file, { upsert: true });
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path);
+      setUser({ avatarUrl: publicUrl });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const save = () => {
     setUser({ firstName, careerStage, goals });
@@ -47,8 +71,33 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="w-full px-8 md:px-16 lg:px-24 py-10 max-w-[1600px] mx-auto">
+        {/* Avatar + Header */}
         <div className="flex items-center justify-between mb-10">
-          <h1 className="text-3xl font-serif text-navy">Your Profile</h1>
+          <div className="flex items-center gap-4">
+            <div className="relative group">
+              <Avatar className="w-16 h-16">
+                <AvatarImage src={avatarSrc} alt={user.firstName} />
+                <AvatarFallback className="bg-rose-soft text-navy font-semibold text-lg">
+                  {user.firstName ? user.firstName.charAt(0).toUpperCase() : '?'}
+                </AvatarFallback>
+              </Avatar>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <Camera className="w-5 h-5 text-white" />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                className="hidden"
+              />
+            </div>
+            <h1 className="text-3xl font-serif text-navy">Your Profile</h1>
+          </div>
           {!editing && (
             <Button variant="ghost" onClick={() => setEditing(true)} className="text-muted-foreground">
               <Edit2 className="w-4 h-4 mr-1" /> Edit
