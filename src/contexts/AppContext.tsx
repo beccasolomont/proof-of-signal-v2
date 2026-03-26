@@ -73,36 +73,21 @@ const defaultUser: UserProfile = {
 
 /** Demo signal data used for seeding and resetting. */
 const DEMO_SIGNALS_DATA = [
-  {
-    text: "Stakeholder review went well — CPO mentioned the roadmap framing by name in the all-hands recap. I didn't know she was going to reference it.",
-    date: '2025-03-18',
-    tag: 'Recognition',
-    flagged: true,
-  },
-  {
-    text: "Felt like my idea about the discovery sprint structure got picked up in the PM sync without attribution. Not sure if I'm reading into it.",
-    date: '2025-03-19',
-    tag: 'Missed Credit',
-    flagged: true,
-  },
-  {
-    text: "1:1 with my manager was shorter than usual. He moved through the agenda fast and didn't ask follow-up questions. Not sure what to make of it.",
-    date: '2025-03-20',
-    tag: 'Manager Signal',
-    flagged: false,
-  },
-  {
-    text: 'Led my first cross-functional roadmap review with design + eng + data. It ran long but nobody left. That felt like something.',
-    date: '2025-03-21',
-    tag: 'Personal Milestone',
-    flagged: true,
-  },
-  {
-    text: "Got feedback in writing from the VP of Design that my framing of the Q2 priorities was 'unusually clear for this stage of planning.' Saved the email.",
-    date: '2025-03-22',
-    tag: 'Recognition',
-    flagged: true,
-  },
+  { text: "CPO referenced my roadmap framing by name in the all-hands recap. I didn't know she was going to do that.", date: '2026-02-03', tag: 'Recognition', flagged: true },
+  { text: 'Ran the Q1 planning kickoff for the first time without a co-lead. It went long but the room stayed with it.', date: '2026-02-06', tag: 'Personal Milestone', flagged: true },
+  { text: "My framework for prioritizing the discovery backlog got picked up in the eng sync — presented as the team's approach, not mine specifically. Not sure how to feel about that.", date: '2026-02-11', tag: 'Missed Credit', flagged: true },
+  { text: "1:1 with my manager felt different today. He was distracted, moved through the agenda fast, didn't ask follow-up questions. Not sure if it's me or something else going on.", date: '2026-02-18', tag: 'Manager Signal', flagged: false },
+  { text: "Got pulled into an exec design review I'm not usually in. Nobody explained why. Just got the calendar invite.", date: '2026-02-20', tag: 'Org / Political Signal', flagged: false },
+  { text: "Peer asked me to review their roadmap before they took it to leadership. First time someone's done that.", date: '2026-02-24', tag: 'Recognition', flagged: false },
+  { text: 'Told in my review feedback to "work on executive presence." No examples. No definition of what that means at my level. Just the phrase.', date: '2026-02-27', tag: 'Constructive Feedback', flagged: true },
+  { text: 'Led my first cross-functional roadmap review with design, eng, and data all in the room. It ran over but nobody left.', date: '2026-03-04', tag: 'Personal Milestone', flagged: true },
+  { text: "My idea about restructuring the discovery sprint cadence got brought up in the PM sync by someone else. No attribution. Not sure if I'm reading into it.", date: '2026-03-07', tag: 'Missed Credit', flagged: true },
+  { text: 'Manager asked me to present the Q2 priorities directly to the VP instead of him doing it. He said "you know this better than I do."', date: '2026-03-10', tag: 'Recognition', flagged: true },
+  { text: 'Reorg rumors. Two people on adjacent teams have been told their roles are "under review." Nobody has said anything to me directly.', date: '2026-03-13', tag: 'Org / Political Signal', flagged: false },
+  { text: 'VP of Design said my framing of the Q2 priorities was "unusually clear for this stage of planning." Saved the email.', date: '2026-03-18', tag: 'Recognition', flagged: true },
+  { text: 'Stakeholder review went well. CPO mentioned the roadmap framing by name in the all-hands recap afterward.', date: '2026-03-19', tag: 'Recognition', flagged: true },
+  { text: '1:1 with my manager was shorter than usual again. He moved through the agenda fast and rescheduled our next two.', date: '2026-03-20', tag: 'Manager Signal', flagged: false },
+  { text: 'Promotion conversation with my manager is in two weeks. I have 6 weeks of signals. The pattern is clearer than I expected.', date: '2026-03-22', tag: 'Personal Milestone', flagged: true },
 ];
 
 const AppContext = createContext<AppState | undefined>(undefined);
