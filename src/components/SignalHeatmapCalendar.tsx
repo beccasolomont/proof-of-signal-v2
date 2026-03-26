@@ -101,14 +101,14 @@ const SignalHeatmapCalendar = ({ signals }: SignalHeatmapCalendarProps) => {
               key={dateStr}
               onClick={() => count > 0 && setSelectedDate(dateStr)}
               className={cn(
-                'h-7 rounded flex flex-col items-center justify-center relative transition-all',
+                'h-9 rounded-md flex flex-col items-center justify-center relative transition-all',
                 count > 0 ? 'cursor-pointer hover:ring-1 hover:ring-navy/30' : 'cursor-default',
                 today && 'ring-1 ring-navy/40',
               )}
               style={count > 0 ? { backgroundColor: `hsl(var(--navy) / ${opacity})` } : undefined}
             >
               <span className={cn(
-                'text-[11px] leading-none',
+                'text-sm leading-none',
                 count > 0 && opacity > 0.5 ? 'text-primary-foreground' : 'text-foreground',
               )}>
                 {format(day, 'd')}
