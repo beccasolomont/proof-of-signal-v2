@@ -11,13 +11,14 @@ import { useApp, FLAG_CATEGORIES, FlagCategory } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import EmptyState from '@/components/illustrations/EmptyState';
-import DemoInsight from '@/components/DemoInsight';
 import { SIGNAL_TAGS } from '@/lib/signalTagger';
-import { TAG_DEFINITIONS, THEME_INSIGHTS, MIN_SIGNALS_FOR_INSIGHT, DEMO_USER_NAME, getTagColorClass } from '@/lib/constants';
+import { TAG_DEFINITIONS, MIN_SIGNALS_FOR_INSIGHT, getTagColorClass } from '@/lib/constants';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import SignalRadarChart from '@/components/SignalRadarChart';
 import SignalHeatmapCalendar from '@/components/SignalHeatmapCalendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import PatternInsightCard from '@/components/PatternInsightCard';
+import PatternChecklist from '@/components/PatternChecklist';
 
 
 const Patterns = () => {
