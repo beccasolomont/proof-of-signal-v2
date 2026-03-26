@@ -24,6 +24,7 @@ const PatternInsightCard = ({ tagCounts, onChecklistGenerated }: PatternInsightC
   const [insight, setInsight] = useState<string | null>(null);
   const [quote, setQuote] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [fetched, setFetched] = useState(false);
 
   const fetchInsight = useCallback(async () => {
