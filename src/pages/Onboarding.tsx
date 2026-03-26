@@ -34,6 +34,7 @@ const Onboarding = () => {
   const [careerStage, setCareerStage] = useState(user.careerStage);
   const [goals, setGoals] = useState<string[]>([]);
   const [signalText, setSignalText] = useState('');
+  const [signalDate, setSignalDate] = useState<Date>(new Date());
   const [submitted, setSubmitted] = useState(false);
   const [assignedTag, setAssignedTag] = useState('');
   const [swappedIn, setSwappedIn] = useState<string | null>(null);
