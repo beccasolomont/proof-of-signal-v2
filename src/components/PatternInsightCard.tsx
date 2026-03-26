@@ -8,15 +8,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { useApp } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
 
-interface PatternInsight {
-  insight: string;
-  quote: string;
-  checklist: { text: string; priority: 'high' | 'medium' | 'low' }[];
+interface ChecklistItem {
+  text: string;
+  priority: 'high' | 'medium' | 'low';
 }
 
 interface PatternInsightCardProps {
   tagCounts: Record<string, number>;
-  onChecklistGenerated: (checklist: PatternInsight['checklist']) => void;
+  onChecklistGenerated: (checklist: ChecklistItem[]) => void;
 }
 
 const PatternInsightCard = ({ tagCounts, onChecklistGenerated }: PatternInsightCardProps) => {

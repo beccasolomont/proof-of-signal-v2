@@ -8,10 +8,9 @@
  * - `onToggleFlag` — callback to toggle the flagged state
  */
 import { useState } from 'react';
-import { Signal } from '@/contexts/AppContext';
-import { useApp } from '@/contexts/AppContext';
+import { Signal, useApp } from '@/contexts/AppContext';
 import { SIGNAL_TAGS } from '@/lib/signalTagger';
-import { getTagColorClass } from '@/lib/constants';
+import { getTagColorClass, MAX_SIGNAL_LENGTH } from '@/lib/constants';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -120,7 +119,7 @@ const SignalCard = ({ signal, onUpdate, onDelete, onToggleFlag }: SignalCardProp
           <div className="space-y-4">
             <Textarea
               value={editText}
-              onChange={e => setEditText(e.target.value.slice(0, 500))}
+              onChange={e => setEditText(e.target.value.slice(0, MAX_SIGNAL_LENGTH))}
               className="rounded-xl min-h-[100px]"
             />
             <div className="flex items-center gap-3">

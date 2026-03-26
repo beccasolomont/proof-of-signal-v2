@@ -7,6 +7,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { DEMO_EMAIL } from '@/lib/constants';
+import { getCustomTags as loadCustomTags, setCustomTags as saveCustomTags, clearCustomTags } from '@/lib/storage';
 import type { User } from '@supabase/supabase-js';
 
 /** Categories that can be assigned to flagged signals for review. */
@@ -123,9 +124,7 @@ function rowToSignal(row: {
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUserState] = useState<UserProfile>(defaultUser);
   const [signals, setSignals] = useState<Signal[]>([]);
-  const [customTags, setCustomTags] = useState<string[]>(() => {
-    try { return JSON.parse(localStorage.getItem('customSignalTags') || '[]'); } catch { return []; }
-  });
+  const [customTags, setCustomTags] = useState<string[]>(() => loadCustomTags());
   const [loading, setLoading] = useState(false);
   const [authUser, setAuthUser] = useState<User | null>(null);
 
@@ -300,7 +299,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setCustomTags(prev => {
       if (prev.includes(tag)) return prev;
       const updated = [...prev, tag];
-      localStorage.setItem('customSignalTags', JSON.stringify(updated));
+      saveCustomTags(updated);
       return updated;
     });
   };
@@ -308,7 +307,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const removeCustomTag = (tag: string) => {
     setCustomTags(prev => {
       const updated = prev.filter(t => t !== tag);
-      localStorage.setItem('customSignalTags', JSON.stringify(updated));
+      saveCustomTags(updated);
       return updated;
     });
   };
@@ -356,7 +355,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setUserState(defaultUser);
     setSignals([]);
     setCustomTags([]);
-    localStorage.removeItem('customSignalTags');
+    clearCustomTags();
   };
 
   /** Re-run AI flag category classification on all flagged signals. */
