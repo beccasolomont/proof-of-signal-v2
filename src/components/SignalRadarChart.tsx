@@ -36,6 +36,7 @@ const SignalRadarChart = ({ tagCounts, totalSignals }: SignalRadarChartProps) =>
     value: (tagCounts[tag] || 0) + baseline,
   }));
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderTick = (props: any) => {
     const { x, y, payload } = props;
     const entry = data.find(d => d.category === payload.value);
