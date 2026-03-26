@@ -16,6 +16,9 @@ const Footer = () => (
         <Link to="/privacy" className="hover:text-foreground transition-colors underline underline-offset-2">
           Privacy &amp; Security
         </Link>
+        <Link to="/terms" className="hover:text-foreground transition-colors underline underline-offset-2">
+          Terms of Use
+        </Link>
       </div>
     </div>
   </footer>
