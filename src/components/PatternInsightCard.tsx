@@ -67,12 +67,11 @@ const PatternInsightCard = ({ tagCounts, onChecklistGenerated }: PatternInsightC
   }, [signals, tagCounts, user.careerStage, user.goals, onChecklistGenerated]);
 
   useEffect(() => {
-    if (!fetched && signals.length > 0 && user.firstName !== DEMO_USER_NAME) {
+    if (!fetched && signals.length > 0) {
       fetchInsight();
     }
-  }, [fetched, signals.length, user.firstName, fetchInsight]);
+  }, [fetched, signals.length, fetchInsight]);
 
-  const isDemo = user.firstName === DEMO_USER_NAME;
 
   return (
     <div className="bg-gradient-to-br from-rose-soft to-blush-light rounded-2xl p-6 border border-blush/20 flex flex-col h-full">
